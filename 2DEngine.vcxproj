@@ -44,8 +44,8 @@
     <OutDir>Debug\</OutDir>
     <IntDir>Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\busta\OneDrive\Universitat\11e_quatri\VJ\Lab\glut-3.7.6-bin;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\busta\OneDrive\Universitat\11e_quatri\VJ\Lab\glut-3.7.6-bin;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VC_SourcePath)/lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>Release\</OutDir>
