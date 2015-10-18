@@ -9,6 +9,21 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="modules">
+      <UniqueIdentifier>{98222b60-a864-4ace-b3fc-80f668fd6443}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules\tmxparser">
+      <UniqueIdentifier>{728e928d-73d0-49c4-b175-4122af896e9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules\rapidxml">
+      <UniqueIdentifier>{44482414-59c9-42e1-9df8-b79436071263}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules\base64">
+      <UniqueIdentifier>{ef80b1b2-9a9b-4a67-b52e-57e75a0b29ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules\stdafx">
+      <UniqueIdentifier>{14a44cba-b6ee-4573-a240-a9811c6cec63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cBicho.cpp">
@@ -31,6 +46,18 @@
     </ClCompile>
     <ClCompile Include="GLUTMain.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cTileSets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>modules\base64</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>modules\stdafx</Filter>
+    </ClCompile>
+    <ClCompile Include="TMXParser.cpp">
+      <Filter>modules\tmxparser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +82,35 @@
     <ClInclude Include="Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rapidxml.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>modules</Filter>
+    </ClInclude>
+    <ClInclude Include="cTileSets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="base64.h">
+      <Filter>modules\base64</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_iterators.hpp">
+      <Filter>modules\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_print.hpp">
+      <Filter>modules\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_utils.hpp">
+      <Filter>modules\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>modules\stdafx</Filter>
+    </ClInclude>
+    <ClInclude Include="TMXParser.h">
+      <Filter>modules\tmxparser</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rapidxml\manual.html" />
   </ItemGroup>
 </Project>

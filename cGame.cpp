@@ -26,9 +26,7 @@ bool cGame::Init()
 
 	//Scene initialization
 	res = Data.LoadImage(IMG_BLOCKS,"blocks.png",GL_RGBA);
-	if(!res) return false;
-	res = Scene.LoadLevel(1);
-	if(!res) return false;
+	Scene.loadOverworld();
 
 	//Player initialization
 	res = Data.LoadImage(IMG_PLAYER,"bub.png",GL_RGBA);
