@@ -17,6 +17,7 @@
 ...
 */
 
+
 class cData
 {
 public:
@@ -25,19 +26,17 @@ public:
 
 	int  GetID(int img);
 	void GetSize(int img,int *w,int *h);
-	void loadImage(int img, char * filename, int type);
+	void loadImage(int img, char * filename, int type = GL_RGBA);
 	void loadOverworldTextures();
 	int * getOverworldIds();
-	void loadImage(int img,char *filename, cTexture* textures, int type = GL_RGBA);
+	int loadImage(int img,char *filename, cTexture* textures, int type = GL_RGBA);
 
 	
 
 private:
 	cTexture texture[NUM_IMG];
-	cTexture overworld_textures;
-	std::array<char*, 2> overworldTexturesFilenames = {"resources\tileset\grass-tiles-2-small.png", "resources\tileset\tree2-final.png"};
-	cTexture overworldTextures[2];
-	
-
-	
+	std::array<char*, 3> overworldTexturesFilenames = { "resources/tileset/grass-tiles-2-small.png",  "resources/tileset/tree2-final.png" };
+	//std::array<char*, 3> overworldTexturesFilenames = { "resources/tileset/zelda_tiles1.png" };
+	cTexture overworldTextures[3];
+	int textures[2];
 };

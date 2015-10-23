@@ -26,23 +26,18 @@ void cData::loadImage(int img, char *filename, int type){
 	this->loadImage(img, filename, texture, type);
 }
 
-void cData::loadImage(int img, char *filename, cTexture* textures, int type)
+int cData::loadImage(int img, char *filename, cTexture* textures, int type)
 {
 	if (!textures[img].Load(filename, type)) throw cdataLoadImageError;
+	return textures[img].GetID();
 }
 
 void cData::loadOverworldTextures() {
-	int id = 0;
-	for (auto it = this->overworldTexturesFilenames.begin(); it != this->overworldTexturesFilenames.end(); ++it) {
-		this->loadImage(id++, (*it), this->overworldTextures);
+	for (int i = 0; i < this->overworldTexturesFilenames.size(); i++) {
+		textures[i] = this->loadImage(i, this->overworldTexturesFilenames[i], this->overworldTextures);
 	}
 }
 
 int* cData::getOverworldIds() {
-	int textures[sizeof(this->overworldTextures)];
-	int i = 0;
-	for (cTexture* it = this->overworldTextures; it != this->overworldTextures; ++it) {
-		textures[i++] = ((*it).GetID());
-	}
 	return textures;
 }

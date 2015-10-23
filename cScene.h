@@ -26,8 +26,7 @@ public:
 
 	void loadOverworld();
 	
-	std::vector<std::vector<int>> generate_matrix(std::string const & s, int scene_height, int scene_width);
-
+	std::vector<std::vector<int>> generate_matrix(std::vector<int> tiles, int scene_height, int scene_width);
 
 	std::vector<std::string> explode(std::string const & s, char delim);
 

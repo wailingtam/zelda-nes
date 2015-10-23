@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="zelda_tiles1" tilewidth="16" tileheight="16" spacing="1">
+  <image source="zelda_tiles1.png" width="786" height="322"/>
+  <tile id="247">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="249">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="295">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="396">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="397">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="398">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="399">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="400">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="401">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="402">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="463">
+   <properties>
+    <property name="e" value="solid, destroy"/>
+   </properties>
+  </tile>
+  <tile id="565">
+   <properties>
+    <property name="e" value="solid, destroy"/>
+   </properties>
+  </tile>
+  <tile id="587">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="590">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="611">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="626">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="627">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="628">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="629">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="630">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="631">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="648">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="649">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="650">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="694">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="695">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="696">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="740">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="741">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="742">
+   <properties>
+    <property name="e" value="destroy"/>
+   </properties>
+  </tile>
+  <tile id="764">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="765">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="766">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="767">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="768">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="769">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="770">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+  <tile id="771">
+   <properties>
+    <property name="e" value="solid"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Tile Layer 1" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt0jESQDAURdGfLAcLQiUWJPZiW+wAI40mRX4hMzHc4rRvbvGciLiP2gKfsBbuG4MlYaCPPkXq35pZ6Zse7ntlHwAAAEBeuxE5Iqcp33WrrEgdaWz5LvryaENLF+lf1AcA+KcLhrsPEA==
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt01suQ1EUxvF9zjEHVfXMCDoDlLoMRiV0Btq4dgQqwQxKXDsClWAGNKh6FYnqPxEv4iRLu05ssr7k99i1v71Ot3MWS3xWA+fWsI4NbGILleC3m33kiB7HOMEpznCOuif97unxgEe08IQ2nj3pNxg6l8IQ0hhGBiOhzvxR7jnWoxd+P06PCUwihylMI4/sF6/u5/O1UuP8Axwq7U071q+/WL/+Yv2+zwrnlRJQVrrH5160ae35ljl3CWh6+j/VzgL3LGBRYEloGUWl/W0zp4odgV2hPewr9btgTgOXAldC17hR6vfGnA7eBcJIJsJApNPPYpGkEcgkkRnexizmMB/zLiVnJ9VPkr/Qz+fva7H8x0jfXS8sFt/TBXMkvNQ=
+  </data>
+ </layer>
+ <layer name="Tile Layer 3" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt0tkJgEAQRMFxA/HIPxZz8UjATkEQVrEK3v/AdBUAAMD/rEPvC+B5W3a9pyOdL9z42KqmNKel9b7me/wXAO65AFvQCW8=
+  </data>
+ </layer>
+</map>

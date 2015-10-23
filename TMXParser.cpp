@@ -1,5 +1,5 @@
+#include "stdafx.h"
 #include "TMXParser.h"
-
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -28,8 +28,8 @@ namespace TMX {
 		rapidxml::file<> file(filename);
 		doc.parse<0>(file.data());
 		//get root nodes
-		root_node = doc.first_node("map");
 
+		root_node = doc.first_node("map");
 		//load map element
 		if (root_node->first_attribute("version")->value() != version) {
 			std::cout << "ERROR: Map version mismatch. Required version: " << VERSION << "." << std::endl;
@@ -49,10 +49,10 @@ namespace TMX {
 		mapInfo.tileHeight = std::atoi(root_node->first_attribute("tileheight")->value());
 		std::cout << "Tile Height: " << mapInfo.tileHeight << std::endl;
 
-		if (root_node->first_attribute("backgroundcolor")->value() != 0) {
-			mapInfo.backgroundColor = root_node->first_attribute("backgroundcolor")->value();
-			std::cout << "Background Color: " << mapInfo.backgroundColor << std::endl;
-		}
+		/*if( root_node->first_attribute( "backgroundcolor" )->value() != 0 ) {
+		mapInfo.backgroundColor = root_node->first_attribute( "backgroundcolor" )->value();
+		std::cout << "Background Color: " << mapInfo.backgroundColor << std::endl;
+		}*/
 
 		if (root_node->first_node("properties") != 0) {
 			for (rapidxml::xml_node<>* properties_node = root_node->first_node("properties")->first_node("property"); properties_node; properties_node = properties_node->next_sibling()) {
@@ -71,7 +71,23 @@ namespace TMX {
 		for (rapidxml::xml_node<>* tileset_node = root_node->first_node("tileset"); tileset_node; tileset_node = tileset_node->next_sibling("tileset")) {
 			Tileset tmpTileset;
 			tmpTileset.firstGID = std::atoi(tileset_node->first_attribute("firstgid")->value());
-			tmpTileset.source = tileset_node->first_attribute("source")->value();
+			for (rapidxml::xml_node<>* image_node = tileset_node->first_node("image"); image_node; image_node = image_node->next_sibling("image")) {
+				tmpTileset.source = image_node->first_attribute("source")->value();
+				tmpTileset.imgheight = std::atoi(image_node->first_attribute("height")->value());
+				tmpTileset.imgwidth = std::atoi(image_node->first_attribute("width")->value());
+			}
+			if (tileset_node->first_node("tile") != 0) {
+
+				for (rapidxml::xml_node<>* tile_node = tileset_node->first_node("tile"); tile_node; tile_node = tile_node->next_sibling()) {
+					std::map<std::string, std::string> properties;
+					if (tile_node->first_node("properties") != 0) {
+						for (rapidxml::xml_node<>* properties_node = tile_node->first_node("properties")->first_node("property"); properties_node; properties_node = properties_node->next_sibling()) {
+							properties[properties_node->first_attribute("name")->value()] = properties_node->first_attribute("value")->value();
+						}
+					}
+					tmpTileset.property.push_back(properties);
+				}
+			}
 			std::cout << "Tileset[ First GID: " << tmpTileset.firstGID << " Source: " << tmpTileset.source << std::endl;
 			tilesetList.push_back(tmpTileset);
 		}
@@ -94,12 +110,16 @@ namespace TMX {
 			}
 
 			rapidxml::xml_node<>* data_node = layer_node->first_node("data");
-			layer.data.encoding = data_node->first_attribute("encoding")->value();
-			std::cout << "Layer Encoding: " << layer.data.encoding << std::endl;
+		//	layer.data.encoding = data_node->first_attribute("encoding")->value();
+			//std::cout << "Layer Encoding: " << layer.data.encoding << std::endl;
 
 			if (data_node->first_attribute("compression") > 0) {
 				layer.data.compression = data_node->first_attribute("compression")->value();
 				std::cout << "Layer Compression: " << layer.data.compression << std::endl;
+			}
+			//PERSONALIZED: get gids
+			for (rapidxml::xml_node<>* otile_node = layer_node->first_node("data")->first_node("tile"); otile_node; otile_node = otile_node->next_sibling("tile")) {
+				layer.data.tiles.push_back(atoi(otile_node->first_attribute("gid")->value()));
 			}
 
 			layer.data.contents = data_node->value();
@@ -110,14 +130,31 @@ namespace TMX {
 		for (rapidxml::xml_node<>* oGroup_node = root_node->first_node("objectgroup"); oGroup_node; oGroup_node = oGroup_node->next_sibling("objectgroup")) {
 			ObjectGroup oGroup;
 			std::cout << std::endl;
-			oGroup.color = oGroup_node->first_attribute("color")->value();
-			std::cout << "Object Group Color: " << oGroup.color << std::endl;
+			//oGroup.color = oGroup_node->first_attribute( "color" )->value();
+			//std::cout << "Object Group Color: " << oGroup.color << std::endl;
 			oGroup.name = oGroup_node->first_attribute("name")->value();
 			std::cout << "Object Group Name: " << oGroup.name << std::endl;
-			oGroup.opacity = std::atof(oGroup_node->first_attribute("opacity")->value());
-			std::cout << "Object Group Opacity: " << oGroup.opacity << std::endl;
-			oGroup.visible = std::atoi(oGroup_node->first_attribute("visible")->value());
-			std::cout << "Object Group Visible: " << oGroup.visible << std::endl;
+			// oGroup.opacity = std::atof( oGroup_node->first_attribute( "opacity" )->value() );
+			// std::cout << "Object Group Opacity: " << oGroup.opacity << std::endl;
+			// oGroup.visible = std::atoi( oGroup_node->first_attribute( "visible" )->value() );
+			// std::cout << "Object Group Visible: " << oGroup.visible << std::endl;
+
+			//Read objects
+			for (rapidxml::xml_node<>* object_node = oGroup_node->first_node("object"); object_node; object_node = object_node->next_sibling("object")) {
+				Object obj;
+				if (object_node->first_attribute("type") > 0) {
+					obj.type = object_node->first_attribute("type")->value();
+				}
+				obj.x = atoi(object_node->first_attribute("x")->value());
+				obj.y = atoi(object_node->first_attribute("y")->value());
+				rapidxml::xml_attribute<>* p = object_node->first_attribute("width");
+				if (p != 0) obj.width = atoi(p->value());
+				p = object_node->first_attribute("height");
+				if (p != 0) obj.height = atoi(p->value());
+				oGroup.object.push_back(obj);
+
+			}
+
 
 			if (oGroup_node->first_node("properties") != 0) {
 				for (rapidxml::xml_node<>* properties_node = oGroup_node->first_node("properties")->first_node("property"); properties_node; properties_node = properties_node->next_sibling()) {
@@ -174,4 +211,3 @@ namespace TMX {
 		return true;
 	}
 }
-
