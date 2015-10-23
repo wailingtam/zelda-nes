@@ -3,6 +3,7 @@
 #include "cTexture.h"
 #include "Globals.h"
 #include <array>
+#include <iostream>
 
 //Image array size
 #define NUM_IMG		2
@@ -35,8 +36,8 @@ public:
 
 private:
 	cTexture texture[NUM_IMG];
-	std::array<char*, 3> overworldTexturesFilenames = { "resources/tileset/grass-tiles-2-small.png",  "resources/tileset/tree2-final.png" };
-	//std::array<char*, 3> overworldTexturesFilenames = { "resources/tileset/zelda_tiles1.png" };
-	cTexture overworldTextures[3];
+	std::array<char*, 2> overworldTexturesFilenames = { "resources/tileset/grass-tiles-2-small.png",  "resources/tileset/tree2-final.png" };
+	//std::array<char*, 2> overworldTexturesFilenames = { "resources/tileset/zelda_tiles1.png" };
+	cTexture overworldTextures[2];
 	int textures[2];
 };

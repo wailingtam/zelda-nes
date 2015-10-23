@@ -29,11 +29,19 @@ bool cGame::Init()
 	Scene.loadOverworld();
 
 	//Player initialization
-	Data.loadImage(IMG_PLAYER,"bub.png",GL_RGBA);
+	/*res = Data.LoadImage(IMG_PLAYER,"bub.png",GL_RGBA);
+	if(!res) return false;
 	Player.SetWidthHeight(32,32);
 	Player.SetTile(4,1);
 	Player.SetWidthHeight(32,32);
-	Player.SetState(STATE_LOOKRIGHT);
+	Player.SetState(STATE_LOOKRIGHT);*/
+
+	//Player(Link) initialization
+	Data.loadImage(IMG_PLAYER, "resources/tileset/greenlink.png", GL_RGBA);
+	Player.SetWidthHeight(40, 40);
+	Player.SetTile(4, 1);
+	Player.SetState(STATE_LOOKDOWN);
+	Player.SetLives(2);
 
 	return res;
 }
@@ -70,10 +78,18 @@ bool cGame::Process()
 	//Process Input, decidirà si en moc o no aun nou lloc
 	if(keys[27])	res=false;
 	
-	if(keys[GLUT_KEY_UP])			Player.Jump(Scene.GetMap());
+	/*if(keys[GLUT_KEY_UP])			Player.Jump(Scene.GetMap());
 	if(keys[GLUT_KEY_LEFT])			Player.MoveLeft(Scene.GetMap());
 	else if(keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap());
+	else Player.Stop();*/
+
+	if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap());
+	else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap());
+	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap());
+	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap());
+	else if (keys[97])				Player.Attack(Scene.GetMap());
 	else Player.Stop();
+
 	
 	
 	//Game Logic En aquest cas la logica es continuar l'ordre que ha fet l'usuari: o continuo saltant o continuo caient. 
