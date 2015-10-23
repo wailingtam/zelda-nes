@@ -24,22 +24,21 @@ public:
 	cScene(void);
 	virtual ~cScene(void);
 
-	
 	void loadOverworld();
-
-
 	
 	std::vector<std::vector<int>> generate_matrix(std::string const & s, int scene_height, int scene_width);
 
 
 	std::vector<std::string> explode(std::string const & s, char delim);
 
-
-	bool LoadLevel(int level);
-	void Draw(int tex_id);
+	///Ordered as the layers
+	void Draw(int * texs_id);
 	int *GetMap();
 
 private:
+	void loadLevel(const char * filename);
 	int map[SCENE_WIDTH * SCENE_HEIGHT];	//scene
 	int id_DL;								//actual level display list
+	int scene_height;
+	int firstIdOfActualLists, numberOfLayers;
 };

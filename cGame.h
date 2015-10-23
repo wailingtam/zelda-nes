@@ -30,4 +30,5 @@ private:
 	cScene Scene;
 	cPlayer Player;
 	cData Data;
+	bool isOverworld = true;
 };

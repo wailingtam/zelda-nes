@@ -25,12 +25,11 @@ bool cGame::Init()
 	glEnable(GL_ALPHA_TEST);
 
 	//Scene initialization
-	res = Data.LoadImage(IMG_BLOCKS,"blocks.png",GL_RGBA);
+	Data.loadOverworldTextures();
 	Scene.loadOverworld();
 
 	//Player initialization
-	res = Data.LoadImage(IMG_PLAYER,"bub.png",GL_RGBA);
-	if(!res) return false;
+	Data.loadImage(IMG_PLAYER,"bub.png",GL_RGBA);
 	Player.SetWidthHeight(32,32);
 	Player.SetTile(4,1);
 	Player.SetWidthHeight(32,32);
@@ -90,7 +89,8 @@ void cGame::Render()
 	
 	glLoadIdentity();
 
-	Scene.Draw(Data.GetID(IMG_BLOCKS));
+	if (this->isOverworld) Scene.Draw(Data.getOverworldIds());
+	
 	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();

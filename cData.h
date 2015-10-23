@@ -2,6 +2,7 @@
 
 #include "cTexture.h"
 #include "Globals.h"
+#include <array>
 
 //Image array size
 #define NUM_IMG		2
@@ -24,8 +25,19 @@ public:
 
 	int  GetID(int img);
 	void GetSize(int img,int *w,int *h);
-	bool LoadImage(int img,char *filename,int type = GL_RGBA);
+	void loadImage(int img, char * filename, int type);
+	void loadOverworldTextures();
+	int * getOverworldIds();
+	void loadImage(int img,char *filename, cTexture* textures, int type = GL_RGBA);
+
+	
 
 private:
 	cTexture texture[NUM_IMG];
+	cTexture overworld_textures;
+	std::array<char*, 2> overworldTexturesFilenames = {"resources\tileset\grass-tiles-2-small.png", "resources\tileset\tree2-final.png"};
+	cTexture overworldTextures[2];
+	
+
+	
 };

@@ -1,14 +1,17 @@
 #include "cTileSets.h"
 
-void cTileSets::init(TMX::Parser tmx) {
-	cTileSets::tmx = tmx;
+cTileSets::cTileSets() {}
+cTileSets::~cTileSets() {}
+
+void cTileSets::init(TMX::Parser tmxa) {
+	this->tmx = tmxa;
 }
 
 ///Given a gid, it returns the top-left x,y texture (or tileset) position, in value of 0 <-> 1
 std::pair<float, float> cTileSets::get_texture_positions(int gid) {
-	TMX::Parser::Tileset actual_tileset = cTileSets::get_tileset(gid);	
-	int tilewidth = cTileSets::tmx.mapInfo.tileWidth;	//We suppose that the size of the tile in the texture (tileset) is the same as in the tile layer
-	int tileheight = cTileSets::tmx.mapInfo.tileHeight;
+	TMX::Parser::Tileset actual_tileset = this->get_tileset(gid);	
+	int tilewidth = this->tmx.mapInfo.tileWidth;	//We suppose that the size of the tile in the texture (tileset) is the same as in the tile layer
+	int tileheight = this->tmx.mapInfo.tileHeight;
 	int tiles_per_row = actual_tileset.imgwidth / tilewidth;
 	int tiles_per_column = actual_tileset.imgheight / tileheight;
 	int pos = gid - actual_tileset.firstGID - 1;
@@ -20,12 +23,12 @@ std::pair<float, float> cTileSets::get_texture_positions(int gid) {
 }
 
 TMX::Parser::Tileset cTileSets::get_tileset(int gid) {
-	for (int i = 0; i < cTileSets::tmx.tilesetList.size(); i++) {
+	for (int i = 0; i < this->tmx.tilesetList.size(); i++) {
 		if (gid < tmx.tilesetList[i].firstGID) return tmx.tilesetList[i];
 	}
 }
 
 std::pair<float, float> cTileSets::get_normalized_tile_size(int gid) {
-	TMX::Parser::Tileset actual_tileset = cTileSets::get_tileset(gid);
-	return std::make_pair((float)cTileSets::tmx.mapInfo.tileWidth / (float)actual_tileset.imgwidth, (float)cTileSets::tmx.mapInfo.tileHeight / (float)actual_tileset.imgheight);
+	TMX::Parser::Tileset actual_tileset = this->get_tileset(gid);
+	return std::make_pair((float)this->tmx.mapInfo.tileWidth / (float)actual_tileset.imgwidth, (float)this->tmx.mapInfo.tileHeight / (float)actual_tileset.imgheight);
 }

@@ -5,17 +5,21 @@
 
 class cTileSets{
 public:
+	cTileSets(void);
+	virtual ~cTileSets(void);
 
-	static void init(TMX::Parser tmx);
+	void init(TMX::Parser tmxa);
 
-	static std::pair<float, float> get_texture_positions(int gid);
+	 std::pair<float, float> get_texture_positions(int gid);
 
-	static TMX::Parser::Tileset get_tileset(int gid);
+	 TMX::Parser::Tileset get_tileset(int gid);
 
-	static std::pair<float, float> get_normalized_tile_size(int gid);
+	 std::pair<float, float> get_normalized_tile_size(int gid);
+
+	 TMX::Parser tmx;
 
 private:
 
-	static TMX::Parser tmx;
+	
 
 };
