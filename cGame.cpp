@@ -10,23 +10,29 @@ cGame::~cGame(void)
 {
 }
 
+void cGame::setView(int w, int h) {
+	glViewport(0, 0, w * ZOOM_FACTOR, h * ZOOM_FACTOR);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, w, 0, h, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+
+	glAlphaFunc(GL_GREATER, 0.05f);
+	glEnable(GL_ALPHA_TEST);
+}
+
 bool cGame::Init()
 {
 	bool res=true;
 
-	//Graphics initialization
-	glClearColor(0.0f,0.0f,0.0f,0.0f);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0,GAME_WIDTH,0,GAME_HEIGHT,0,1);
-	glMatrixMode(GL_MODELVIEW);
-	
-	glAlphaFunc(GL_GREATER, 0.05f);
-	glEnable(GL_ALPHA_TEST);
+	cGame::setView(GAME_WIDTH, GAME_HEIGHT);
 
 	//Scene initialization
+	
 	Data.loadOverworldTextures();
 	Scene.loadOverworld();
+	Scene.loadInnerworld();
 
 	//Player initialization
 	/*res = Data.LoadImage(IMG_PLAYER,"bub.png",GL_RGBA);
@@ -88,6 +94,7 @@ bool cGame::Process()
 	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap());
 	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap());
 	else if (keys[97])				Player.Attack(Scene.GetMap());
+	else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
 	else Player.Stop();
 
 	
@@ -104,10 +111,20 @@ void cGame::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glLoadIdentity();
+	moveCamera();
 
-	if (this->isOverworld) Scene.Draw(Data.getOverworldIds());
+	Scene.setDrawing(this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL);
+		
+	Scene.Draw(Data.getOverworldIds());
 	
 	Player.Draw(Data.GetID(IMG_PLAYER));
 
 	glutSwapBuffers();
+}
+
+
+void cGame::moveCamera() {
+	int playerx, playery;
+	Player.GetPosition(&playerx, &playery);
+	glTranslatef(-playerx, -playery, 0);	//Move the camera with the player
 }

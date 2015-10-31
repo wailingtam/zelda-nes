@@ -80,12 +80,13 @@ namespace TMX {
 
 				for (rapidxml::xml_node<>* tile_node = tileset_node->first_node("tile"); tile_node; tile_node = tile_node->next_sibling()) {
 					std::map<std::string, std::string> properties;
+					//properties["id"] = std::string(tileset_node->first_attribute("id")->value(), tileset_node->first_attribute("id")->value_size());
 					if (tile_node->first_node("properties") != 0) {
 						for (rapidxml::xml_node<>* properties_node = tile_node->first_node("properties")->first_node("property"); properties_node; properties_node = properties_node->next_sibling()) {
 							properties[properties_node->first_attribute("name")->value()] = properties_node->first_attribute("value")->value();
 						}
+						tmpTileset.property[atoi(tile_node->first_attribute("id")->value())] = properties;
 					}
-					tmpTileset.property.push_back(properties);
 				}
 			}
 			std::cout << "Tileset[ First GID: " << tmpTileset.firstGID << " Source: " << tmpTileset.source << std::endl;

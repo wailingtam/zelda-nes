@@ -31,9 +31,17 @@ void AppMouse(int button, int state, int x, int y)
 {
 	Game.ReadMouse(button,state,x,y);
 }
-void AppIdle()
-{
+void AppIdle(){
+	int t1 = glutGet(GLUT_ELAPSED_TIME);
+	int t2;
 	if(!Game.Loop()) exit(0);
+	do {
+		t2 = glutGet(GLUT_ELAPSED_TIME);
+	} while (t2 - t1 < 20); //20ms -> 1000/20 = 50 fps
+}
+
+void reshape(int w, int h){
+	Game.setView(w, h);
 }
 
 void main(int argc, char** argv)
@@ -54,7 +62,7 @@ void main(int argc, char** argv)
 	
 	glutInitWindowPosition(pos_x,pos_y);
 	glutInitWindowSize(GAME_WIDTH,GAME_HEIGHT);
-	glutCreateWindow("Bubble returns!");
+	glutCreateWindow("Zelda Returns");
 
 	/*glutGameModeString("800x600:32");
 	glutEnterGameMode();*/
@@ -64,7 +72,8 @@ void main(int argc, char** argv)
 
 	//Register callback functions
 	glutDisplayFunc(AppRender);			
-	glutKeyboardFunc(AppKeyboard);		
+	glutKeyboardFunc(AppKeyboard);
+	glutReshapeFunc(reshape);
 	glutKeyboardUpFunc(AppKeyboardUp);	
 	glutSpecialFunc(AppSpecialKeys);	
 	glutSpecialUpFunc(AppSpecialKeysUp);

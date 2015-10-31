@@ -4,14 +4,17 @@
 #include "cPlayer.h"
 #include "cData.h"
 
-#define GAME_WIDTH	1024
-#define GAME_HEIGHT 768
+#define GAME_WIDTH	800
+#define GAME_HEIGHT 600
+#define ZOOM_FACTOR 4
 
 class cGame
 {
 public:
 	cGame(void);
 	virtual ~cGame(void);
+
+	void setView(int w, int h);
 
 	bool Init();
 	bool Loop();
@@ -24,6 +27,8 @@ public:
 	bool Process();
 	//Output
 	void Render();
+
+	void moveCamera();
 
 private:
 	unsigned char keys[256];

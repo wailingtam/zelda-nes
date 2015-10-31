@@ -36,8 +36,9 @@ public:
 
 private:
 	cTexture texture[NUM_IMG];
-	std::array<char*, 2> overworldTexturesFilenames = { "resources/tileset/grass-tiles-2-small.png",  "resources/tileset/tree2-final.png" };
+	//std::array<char*, 2> overworldTexturesFilenames = { "resources/tileset/grass-tiles-2-small.png",  "resources/tileset/tree2-final.png" };
+	std::array<char*, 1> overworldTexturesFilenames = { "resources/tileset/roguelikeSheet_transparent.png"};
 	//std::array<char*, 2> overworldTexturesFilenames = { "resources/tileset/zelda_tiles1.png" };
-	cTexture overworldTextures[2];
-	int textures[2];
+	cTexture overworldTextures[1];
+	int textures[1];
 };

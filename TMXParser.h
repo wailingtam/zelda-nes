@@ -38,7 +38,8 @@ namespace TMX
         unsigned int firstGID;
 		int imgwidth;
 		int imgheight;
-		std::vector<std::map<std::string, std::string> > property;
+		//std::vector<std::map<std::string, std::string> > property;
+		std::map <unsigned int, std::map<std::string, std::string>> property;
         std::string source;
       };
 
