@@ -91,12 +91,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="base64.cpp" />
+    <ClCompile Include="cAquamentus.cpp" />
     <ClCompile Include="cBicho.cpp" />
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cGame.cpp" />
+    <ClCompile Include="cOctorok.cpp" />
     <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cScene.cpp" />
+    <ClCompile Include="cTektike.cpp" />
     <ClCompile Include="cTexture.cpp" />
+    <ClCompile Include="cWeapon.cpp" />
+    <ClCompile Include="cWizzrobe.cpp" />
     <ClCompile Include="GLUTMain.cpp" />
     <ClCompile Include="cTileSets.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -104,12 +109,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base64.h" />
+    <ClInclude Include="cAquamentus.h" />
     <ClInclude Include="cBicho.h" />
     <ClInclude Include="cData.h" />
     <ClInclude Include="cGame.h" />
+    <ClInclude Include="cOctorok.h" />
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cScene.h" />
+    <ClInclude Include="cTektike.h" />
     <ClInclude Include="cTexture.h" />
+    <ClInclude Include="cWeapon.h" />
+    <ClInclude Include="cWizzrobe.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="cTileSets.h" />
     <ClInclude Include="rapidxml.hpp" />

@@ -2,11 +2,16 @@
 
 #include "cScene.h"
 #include "cPlayer.h"
+#include "cOctorok.h"
+#include "cTektike.h"
+#include "cWizzrobe.h"
+#include "cAquamentus.h"
 #include "cData.h"
+#include <vector>
 
 #define GAME_WIDTH	800
 #define GAME_HEIGHT 600
-#define ZOOM_FACTOR 4
+#define ZOOM_FACTOR 8
 
 class cGame
 {
@@ -34,6 +39,10 @@ private:
 	unsigned char keys[256];
 	cScene Scene;
 	cPlayer Player;
+	cOctorok Octorok;
+	cTektike Tektike;
+	cWizzrobe Wizzrobe;
+	cAquamentus Aquamentus;
 	cData Data;
 	bool isOverworld = true;
 };

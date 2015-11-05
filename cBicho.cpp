@@ -1,5 +1,4 @@
 #include "cBicho.h"
-#include "cScene.h"
 #include "Globals.h"
 
 cBicho::cBicho(void)
@@ -7,7 +6,7 @@ cBicho::cBicho(void)
 	seq = 0;
 	delay = 0;
 
-	jumping = false;
+	//jumping = false;
 }
 cBicho::~cBicho(void) {}
 
@@ -17,6 +16,9 @@ cBicho::cBicho(int posx, int posy, int width, int height)
 	y = posy;
 	w = width;
 	h = height;
+}
+void cBicho::Init()
+{
 }
 void cBicho::SetPosition(int posx, int posy)
 {
@@ -48,11 +50,36 @@ void cBicho::GetWidthHeight(int *width, int *height)
 	*width = w;
 	*height = h;
 }
+void cBicho::SetStepLength(int sl)
+{
+	step_length = sl;
+}
+int cBicho::GetStepLength()
+{
+	return step_length;
+}
 bool cBicho::Collides(cRect *rc)
 {
-	return ((x>rc->left) && (x + w<rc->right) && (y>rc->bottom) && (y + h<rc->top));
+	//return ((x>rc->left) && (x+w<rc->right) && (y>rc->bottom) && (y+h<rc->top));
+	cRect chb = GetCurrentHitbox();
+	/*int d1x = rc->left - chb.right;
+	int d1y = rc->bottom - chb.top;
+	int d2x = chb.left - rc->right;
+	int d2y = chb.bottom - rc->top;
+
+	if (d1x > 0 && d1y > 0) return false;
+	if(d2x > 0 && d2y > 0) return false;*/
+
+
+	bool hit = !(
+		chb.right < rc->left ||
+		rc->right < chb.left ||
+		chb.top < rc->bottom ||
+		rc->top < chb.bottom
+		);
+	return hit;
 }
-bool cBicho::CollidesMapWall(int *map, bool right)
+bool cBicho::CollidesMapWall(worldMatrix *map, bool right)
 {
 	int tile_x, tile_y;
 	int j;
@@ -65,15 +92,15 @@ bool cBicho::CollidesMapWall(int *map, bool right)
 
 	if (right)	tile_x += width_tiles;
 
-	for (j = 0; j<height_tiles; j++)
-	{
-		if (map[tile_x + ((tile_y + j)*SCENE_WIDTH)] != 0)	return true;
-	}
+	//for (j = 0; j<height_tiles; j++)
+	//{
+	//	if (map[tile_x + ((tile_y + j)*SCENE_WIDTH)] != 0)	return true;
+	//}
 
 	return false;
 }
 
-bool cBicho::CollidesMapFloor(int *map)
+bool cBicho::CollidesMapFloor(worldMatrix *map)
 {
 	int tile_x, tile_y;
 	int width_tiles;
@@ -92,16 +119,16 @@ bool cBicho::CollidesMapFloor(int *map)
 	{
 		if ((y % TILE_SIZE) == 0)
 		{
-			if (map[(tile_x + i) + ((tile_y - 1) * SCENE_WIDTH)] != 0)
-				on_base = true;
+			//if (map[(tile_x + i) + ((tile_y - 1) * SCENE_WIDTH)] != 0)
+				//on_base = true;
 		}
 		else
 		{
-			if (map[(tile_x + i) + (tile_y * SCENE_WIDTH)] != 0)
-			{
-				y = (tile_y + 1) * TILE_SIZE;
-				on_base = true;
-			}
+		//	if (map[(tile_x + i) + (tile_y * SCENE_WIDTH)] != 0)
+		//	{
+		//		y = (tile_y + 1) * TILE_SIZE;
+		//		on_base = true;
+		//	}
 		}
 		i++;
 	}
@@ -115,6 +142,7 @@ void cBicho::GetArea(cRect *rc)
 	rc->bottom = y;
 	rc->top = y + h;
 }
+
 void cBicho::DrawRect(int tex_id, float xo, float yo, float xf, float yf)
 {
 	int screen_x, screen_y;
@@ -135,14 +163,14 @@ void cBicho::DrawRect(int tex_id, float xo, float yo, float xf, float yf)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void cBicho::MoveUp(int *map) {
+void cBicho::MoveUp(worldMatrix *map) {
 	int yaux;
 
 	//Whats next tile?
 	if ((y % TILE_SIZE) == 0)
 	{
 		yaux = y;
-		y += STEP_LENGTH;
+		y += step_length;
 
 		if (CollidesMapWall(map, false))
 		{
@@ -153,7 +181,7 @@ void cBicho::MoveUp(int *map) {
 	//Advance, no problem
 	else
 	{
-		y += STEP_LENGTH;
+		y += step_length;
 		if (state != STATE_WALKUP)
 		{
 			state = STATE_WALKUP;
@@ -163,14 +191,14 @@ void cBicho::MoveUp(int *map) {
 	}
 }
 
-void cBicho::MoveDown(int *map) {
+void cBicho::MoveDown(worldMatrix *map) {
 	int yaux;
 
 	//Whats next tile?
 	if ((y % TILE_SIZE) == 0)
 	{
 		yaux = y;
-		y -= STEP_LENGTH;
+		y -= step_length;
 
 		if (CollidesMapWall(map, false))
 		{
@@ -181,7 +209,7 @@ void cBicho::MoveDown(int *map) {
 	//Advance, no problem
 	else
 	{
-		y -= STEP_LENGTH;
+		y -= step_length;
 		if (state != STATE_WALKDOWN)
 		{
 			state = STATE_WALKDOWN;
@@ -191,7 +219,7 @@ void cBicho::MoveDown(int *map) {
 	}
 }
 
-void cBicho::MoveLeft(int *map)
+void cBicho::MoveLeft(worldMatrix *map)
 {
 	int xaux;
 
@@ -199,7 +227,7 @@ void cBicho::MoveLeft(int *map)
 	if ((x % TILE_SIZE) == 0)
 	{
 		xaux = x;
-		x -= STEP_LENGTH;
+		x -= step_length;
 
 		if (CollidesMapWall(map, false))
 		{
@@ -210,7 +238,7 @@ void cBicho::MoveLeft(int *map)
 	//Advance, no problem
 	else
 	{
-		x -= STEP_LENGTH;
+		x -= step_length;
 		if (state != STATE_WALKLEFT)
 		{
 			state = STATE_WALKLEFT;
@@ -219,7 +247,7 @@ void cBicho::MoveLeft(int *map)
 		}
 	}
 }
-void cBicho::MoveRight(int *map)
+void cBicho::MoveRight(worldMatrix *map)
 {
 	int xaux;
 
@@ -227,7 +255,7 @@ void cBicho::MoveRight(int *map)
 	if ((x % TILE_SIZE) == 0)
 	{
 		xaux = x;
-		x += STEP_LENGTH;
+		x += step_length;
 
 		if (CollidesMapWall(map, true))
 		{
@@ -238,7 +266,7 @@ void cBicho::MoveRight(int *map)
 	//Advance, no problem
 	else
 	{
-		x += STEP_LENGTH;
+		x += step_length;
 
 		if (state != STATE_WALKRIGHT)
 		{
@@ -260,27 +288,31 @@ void cBicho::Stop()
 	}
 }
 
-void cBicho::Attack(int *map) {
+void cBicho::Attack(worldMatrix *map) {
 	attacking = true;
-}
-
-void cBicho::Jump(int *map)
-{
-	if (!jumping)
-	{
-		if (CollidesMapFloor(map))
-		{
-			jumping = true;
-			jump_alfa = 0;
-			jump_y = y;
-		}
+	if (lives == 3 && !WeaponThrown) {
+		WeaponThrown = true;
 	}
 }
-void cBicho::Logic(int *map)
-{
-	float alfa;
 
-	/*if(jumping)
+void cBicho::Jump(worldMatrix *map)
+{
+	/*if(!jumping)
+	{
+	if(CollidesMapFloor(map))
+	{
+	jumping = true;
+	jump_alfa = 0;
+	jump_y = y;
+	}
+	}*/
+}
+
+void cBicho::Logic(worldMatrix *map)
+{
+	/*float alfa;
+
+	if(jumping)
 	{
 	jump_alfa += JUMP_STEP;
 
@@ -305,13 +337,13 @@ void cBicho::Logic(int *map)
 	{
 	//Over floor?
 	if(!CollidesMapFloor(map))
-	y -= (2*STEP_LENGTH);
+	y -= (2*step_length);
 	}*/
 }
 void cBicho::NextFrame(int max)
 {
 	delay++;
-	if (delay == FRAME_DELAY)
+	if (delay == frame_delay)
 	{
 		seq++;
 		seq %= max;
@@ -321,6 +353,43 @@ void cBicho::NextFrame(int max)
 int cBicho::GetFrame()
 {
 	return seq;
+}
+void cBicho::SetFrameDelay(int fd)
+{
+	frame_delay = fd;
+}
+cRect cBicho::GetHitbox()
+{
+	return Hitbox;
+}
+void cBicho::SetHitbox(int left, int right, int bottom, int top)
+{
+	Hitbox.left = left;
+	Hitbox.right = right;
+	Hitbox.bottom = bottom;
+	Hitbox.top = top;
+}
+void cBicho::SetFourHitboxes(int left, int right, int bottom, int top, int position)
+{
+	cRect hb;
+	hb.left = left;
+	hb.right = right;
+	hb.bottom = bottom;
+	hb.top = top;
+	vHitbox[position] = hb;
+}
+cRect cBicho::GetHitboxByPosition(int position)
+{
+	return vHitbox[position];
+}
+cRect cBicho::GetCurrentHitbox()
+{
+	cRect chb;
+	chb.left = x + Hitbox.left;
+	chb.right = x + Hitbox.right;
+	chb.bottom = y + Hitbox.bottom;
+	chb.top = y + Hitbox.top;
+	return chb;
 }
 int cBicho::GetState()
 {
@@ -341,12 +410,94 @@ void cBicho::SetAttackState(bool as)
 	attacking = as;
 }
 
-int cBicho::GetLives()
+float cBicho::GetLives()
 {
 	return lives;
 }
 
-void cBicho::SetLives(int l)
+void cBicho::SetLives(float l)
 {
 	lives = l;
+}
+
+bool cBicho::GetAlive()
+{
+	return (lives > 0);
+}
+
+void cBicho::SetAlive(bool a)
+{
+	alive = a;
+}
+
+bool cBicho::GetHit()
+{
+	return hit;
+}
+
+void cBicho::SetHit(bool h)
+{
+	hit = h;
+}
+
+void cBicho::Hurt()
+{
+	hurt = true;
+	--lives;
+	if (lives == 0) alive = false;
+	else {
+		immune = true;
+		SetImmuneTime(100);
+	}
+}
+
+bool cBicho::GetHurt()
+{
+	return hurt;
+}
+
+void cBicho::SetHurt(bool h)
+{
+	hurt = h;
+}
+
+bool cBicho::GetImmune()
+{
+	return immune;
+}
+
+void cBicho::SetImmune(bool i)
+{
+	immune = i;
+}
+
+int cBicho::GetImmuneTime()
+{
+	return immune_time;
+}
+
+
+void cBicho::SetImmuneTime(int it)
+{
+	immune_time = it;
+}
+
+bool cBicho::GetWeaponThrown()
+{
+	return WeaponThrown;
+}
+
+void cBicho::SetWeaponThrown(bool wt)
+{
+	WeaponThrown = wt;
+}
+
+bool cBicho::GetWeaponHit()
+{
+	return weaponHit;
+}
+
+void cBicho::SetWeaponHit(bool wh)
+{
+	weaponHit = wh;
 }

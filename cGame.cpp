@@ -34,20 +34,20 @@ bool cGame::Init()
 	Scene.loadOverworld();
 	Scene.loadInnerworld();
 
-	//Player initialization
-	/*res = Data.LoadImage(IMG_PLAYER,"bub.png",GL_RGBA);
-	if(!res) return false;
-	Player.SetWidthHeight(32,32);
-	Player.SetTile(4,1);
-	Player.SetWidthHeight(32,32);
-	Player.SetState(STATE_LOOKRIGHT);*/
-
 	//Player(Link) initialization
-	Data.loadImage(IMG_PLAYER, "resources/tileset/greenlink.png", GL_RGBA);
-	Player.SetWidthHeight(40, 40);
-	Player.SetTile(4, 1);
-	Player.SetState(STATE_LOOKDOWN);
-	Player.SetLives(2);
+	Data.loadImage(IMG_PLAYER, "resources/tileset/greenlink2.png", GL_RGBA);
+	if (!res) return false;
+	Player.Init();
+
+	Data.loadImage(IMG_ENEMIES, "resources/tileset/enemies.png", GL_RGBA);
+	if (!res) return false;
+
+	srand(time(NULL));
+
+	Octorok.Init();
+	Tektike.Init();
+	Wizzrobe.Init();
+	Aquamentus.Init();
 
 	return res;
 }
@@ -77,30 +77,61 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 }
 
 //Process
+
+
 bool cGame::Process()
 {
-	bool res=true;
-	
-	//Process Input, decidirà si en moc o no aun nou lloc
-	if(keys[27])	res=false;
-	
-	/*if(keys[GLUT_KEY_UP])			Player.Jump(Scene.GetMap());
-	if(keys[GLUT_KEY_LEFT])			Player.MoveLeft(Scene.GetMap());
-	else if(keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap());
-	else Player.Stop();*/
+	bool res = true;
+	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
 
-	if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap());
-	else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap());
-	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap());
-	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap());
-	else if (keys[97])				Player.Attack(Scene.GetMap());
+	//Process Input
+	if (keys[27])	res = false;
+
+	if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap(level));
+	else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap(level));
+	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap(level));
+	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level));
 	else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
 	else Player.Stop();
+	if (keys[97])					Player.Attack(Scene.GetMap(level));		//S = 115
 
-	
-	
-	//Game Logic En aquest cas la logica es continuar l'ordre que ha fet l'usuari: o continuo saltant o continuo caient. 
-	Player.Logic(Scene.GetMap());
+
+																		//Game Logic
+	cRect pchb = Player.GetCurrentHitbox();
+	Player.Logic(Scene.GetMap(level), &pchb);
+	pchb = Player.GetCurrentHitbox();
+	cRect shb = Player.GetSwordHitbox();
+	bool swordThrown = Player.GetWeaponThrown();
+	bool hitPlayer = false;
+
+
+	if (Octorok.GetAlive()) Octorok.Logic(Scene.GetMap(level), &pchb, &shb, swordThrown);
+	Tektike.Logic(Scene.GetMap(level), &pchb, &shb, swordThrown);
+	int px, py;
+	Player.GetPosition(&px, &py);
+	Wizzrobe.Logic(Scene.GetMap(level), px, py, &pchb, &shb, swordThrown);
+	Aquamentus.Logic(Scene.GetMap(level), &pchb, &shb, swordThrown);
+
+	if (Octorok.GetWeaponHit()) {
+		if (!Player.GetImmune()) {
+			Player.Hurt();
+			Octorok.SetWeaponThrown(false);
+		}
+		Octorok.SetWeaponHit(false);
+	}
+	if (Octorok.GetHit() /*|| Tektike.GetHit() || Wizzrobe.GetHit() || Aquamentus.GetHit()*/) {
+		if (!Player.GetImmune()) Player.Hurt();
+		Octorok.SetHit(false);
+		/*Tektike.SetHit(false);
+		Wizzrobe.SetHit(false);
+		Aquamentus.SetHit(false);*/
+	}
+	if (Octorok.GetHurt()) {
+		Player.SetWeaponThrown(false);
+		Octorok.SetHurt(false);
+	}
+
+	Player.countTime();
 
 	return res;
 }
@@ -118,7 +149,10 @@ void cGame::Render()
 	Scene.Draw(Data.getOverworldIds());
 	
 	Player.Draw(Data.GetID(IMG_PLAYER));
-
+	if (Octorok.GetAlive()) Octorok.Draw(Data.GetID(IMG_ENEMIES));
+	Tektike.Draw(Data.GetID(IMG_ENEMIES));
+	Wizzrobe.Draw(Data.GetID(IMG_ENEMIES));
+	Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
 	glutSwapBuffers();
 }
 
