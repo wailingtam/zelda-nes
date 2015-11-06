@@ -20,6 +20,7 @@ void cGame::setView(int w, int h) {
 
 	glAlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_ALPHA_TEST);
+	this->w = h;
 }
 
 bool cGame::Init()
@@ -36,11 +37,9 @@ bool cGame::Init()
 
 	//Player(Link) initialization
 	Data.loadImage(IMG_PLAYER, "resources/tileset/greenlink2.png", GL_RGBA);
-	if (!res) return false;
 	Player.Init();
 
 	Data.loadImage(IMG_ENEMIES, "resources/tileset/enemies.png", GL_RGBA);
-	if (!res) return false;
 
 	srand(time(NULL));
 
@@ -48,6 +47,9 @@ bool cGame::Init()
 	Tektike.Init();
 	Wizzrobe.Init();
 	Aquamentus.Init();
+
+	Data.loadImage(IMG_HEART, "resources/tileset/heart.png", GL_RGBA);
+	Data.loadImage(IMG_MINIMAP, "resources/minimap.png", GL_RGBA);
 
 	return res;
 }
@@ -142,17 +144,22 @@ void cGame::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glLoadIdentity();
-	moveCamera();
-
-	Scene.setDrawing(this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL);
-		
-	Scene.Draw(Data.getOverworldIds());
-	
-	Player.Draw(Data.GetID(IMG_PLAYER));
-	if (Octorok.GetAlive()) Octorok.Draw(Data.GetID(IMG_ENEMIES));
-	Tektike.Draw(Data.GetID(IMG_ENEMIES));
-	Wizzrobe.Draw(Data.GetID(IMG_ENEMIES));
-	Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
+		moveCamera();
+		Scene.setDrawing(this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL);
+		Scene.Draw(Data.getOverworldIds());
+		Player.Draw(Data.GetID(IMG_PLAYER));
+		if (Octorok.GetAlive()) Octorok.Draw(Data.GetID(IMG_ENEMIES));
+		Tektike.Draw(Data.GetID(IMG_ENEMIES));
+		Wizzrobe.Draw(Data.GetID(IMG_ENEMIES));
+		Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
+	glLoadIdentity();
+		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->w);
+		if (this->isOverworld) {
+			int x, y;
+			Player.GetPosition(&x, &y);
+			worldMatrix *map = Scene.GetMap(OVERWORLD_LEVEL);
+			Interface.drawMinimap(Data.GetID(IMG_MINIMAP), (float)x / (float)((*map)[0].size() * BLOCK_SIZE), (float)y / (float)(map->size() * BLOCK_SIZE));
+		}
 	glutSwapBuffers();
 }
 

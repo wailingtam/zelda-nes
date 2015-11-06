@@ -95,6 +95,7 @@
     <ClCompile Include="cBicho.cpp" />
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cGame.cpp" />
+    <ClCompile Include="cInterface.cpp" />
     <ClCompile Include="cOctorok.cpp" />
     <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cScene.cpp" />
@@ -113,6 +114,7 @@
     <ClInclude Include="cBicho.h" />
     <ClInclude Include="cData.h" />
     <ClInclude Include="cGame.h" />
+    <ClInclude Include="cInterface.h" />
     <ClInclude Include="cOctorok.h" />
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cScene.h" />

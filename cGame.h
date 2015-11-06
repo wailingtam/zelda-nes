@@ -7,6 +7,7 @@
 #include "cWizzrobe.h"
 #include "cAquamentus.h"
 #include "cData.h"
+#include "cInterface.h"
 #include <vector>
 
 #define GAME_WIDTH	800
@@ -43,6 +44,8 @@ private:
 	cTektike Tektike;
 	cWizzrobe Wizzrobe;
 	cAquamentus Aquamentus;
+	cInterface Interface;
 	cData Data;
 	bool isOverworld = true;
+	int w;
 };
