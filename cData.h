@@ -30,6 +30,7 @@ public:
 
 	int  GetID(int img);
 	void GetSize(int img,int *w,int *h);
+	void LoadImage(int img, char *filename, int type = GL_RGBA);
 	void loadImage(int img, char * filename, int type = GL_RGBA);
 	void loadOverworldTextures();
 	int * getOverworldIds();

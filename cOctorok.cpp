@@ -2,42 +2,33 @@
 
 cOctorok::cOctorok(void)
 {
+	SetFrameDelay(8);
+	SetWidthHeight(16, 16);
+	SetState(rand() % 4);
+	SetLives(1.0);
+	SetStepLength(rand() % 2 + 1);
+	steps = 0;
+	Rock.SetWidthHeight(16, 16);
+	Rock.SetThrown(false);
+	Rock.SetSpeed(3);
+	SetHitbox(2, 14, 2, 14);
+	Rock.SetHitbox(5, 11, 4, 12);
 }
 
 cOctorok::~cOctorok(void)
 {
 }
 
-void cOctorok::Init()
-{
-	SetFrameDelay(8);
-	SetWidthHeight(16, 16);
-	SetTile(5, 2);
-	SetState(STATE_LOOKLEFT);
-	SetStepLength(rand() % 3 + 1);
-	SetLives(1.0);
-	SetAlive(true);
-	steps = 0;
-	Rock.SetWidthHeight(16, 16);
-	Rock.SetTile(10, 2);
-	Rock.SetThrown(false);
-	Rock.SetState(STATE_LOOKLEFT);
-	Rock.SetSpeed(3);
-	SetHitbox(4, 12, 4, 12);
-	Rock.SetHitbox(5, 11, 4, 12);
-}
-
-void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, bool swordThrown)
+void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
 {
 	if (!GetWeaponHit()) Rock.SetHit(false);
 	if (!GetWeaponThrown()) Rock.SetThrown(false);
 
 	if (steps == 0) {
 		steps = rand() % 100;
-		direction = rand() % 8;
-		SetState(direction);
+		SetState(rand() % 8);
 	}
-	switch (direction) {
+	switch (GetState()) {
 		case STATE_WALKLEFT:
 			MoveLeft(map);
 			break;
@@ -54,7 +45,7 @@ void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 			MoveDown(map);
 			break;
 
-		default: if(!GetWeaponThrown()) SetWeaponThrown(rand() % 2);
+		default: if(!GetWeaponThrown()) SetWeaponThrown(rand() % 5 == 0);
 	}
 	
 	steps -= 1;
@@ -66,6 +57,7 @@ void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 			Rock.SetPosition(px, py);
 			Rock.SetThrown(true);
 			Rock.SetState(GetState());
+			Rock.ResetDistance();
 		}
 		Rock.Logic(map, playerHitbox);
 		if (!Rock.GetThrown()) SetWeaponThrown(false);
@@ -74,10 +66,15 @@ void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 	if (Rock.GetHit()) {
 		SetWeaponHit(true);
 	}
-	else SetHit(Collides(playerHitbox));
+
+	SetHit(Collides(playerHitbox));
 
 	if (swordThrown) {
 		if (Collides(swordHitbox) && !GetImmune()) Hurt();
+	}
+	else if (directAttack) {
+		if (Collides(directSwordHitbox) && !GetImmune())
+			Hurt();
 	}
 }
 

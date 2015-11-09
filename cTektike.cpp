@@ -2,24 +2,18 @@
 
 cTektike::cTektike(void)
 {
-}
-
-cTektike::~cTektike(void)
-{
-}
-
-void cTektike::Init()
-{
 	SetFrameDelay(16);
 	SetWidthHeight(16, 16);
-	SetTile(10, 20);
 	SetStepLength(3);
 	SetLives(1.0);
-	SetAlive(true);
 	SetHitbox(1, 15, 1, 14);
 	jumping = false;
 	jump_delay = 0;
 	jump_freq = rand() % 240 + 250;
+}
+
+cTektike::~cTektike(void)
+{
 }
 
 void cTektike::Jump(worldMatrix * map)
@@ -41,7 +35,7 @@ void cTektike::Jump(worldMatrix * map)
 	}
 }
 
-void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, bool swordThrown)
+void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
 {
 	jump_delay++;
 	if (jump_delay == jump_freq) {
@@ -89,9 +83,15 @@ void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 			SetPosition(tx, ty);
 	}*/
 	SetHit(Collides(playerHitbox));
-/*	if (swordThrown) {
-		SetHurt(Collides(swordHitbox));
-	}*/
+
+	if (swordThrown) {
+		if (Collides(swordHitbox) && !GetImmune())
+			Hurt();
+	}
+	else if (directAttack) {
+		if (Collides(directSwordHitbox) && !GetImmune())
+			Hurt();
+	}
 }
 
 void cTektike::Draw(int tex_id)

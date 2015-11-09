@@ -37,7 +37,6 @@ public:
 	cBicho(int x, int y, int w, int h);
 	~cBicho(void);
 
-	void Init();
 	void SetPosition(int x, int y);
 	void GetPosition(int *x, int *y);
 	void SetTile(int tx, int ty);
@@ -48,6 +47,7 @@ public:
 	int	 GetStepLength();
 
 	bool Collides(cRect *rc);
+	bool CollidesMapLimits(worldMatrix * map);
 	bool CollidesMapWall(worldMatrix *map, bool right);
 	bool CollidesMapFloor(worldMatrix *map);
 	void GetArea(cRect *rc);
@@ -57,15 +57,12 @@ public:
 	void MoveLeft(worldMatrix *map);
 	void MoveUp(worldMatrix *map);
 	void MoveDown(worldMatrix *map);
-	void Attack(worldMatrix *map);
 	void Jump(worldMatrix *map);
 	void Stop();
 	void Logic(worldMatrix *map);
 
 	int  GetState();
 	void SetState(int s);
-	bool GetAttackState();
-	void SetAttackState(bool as);
 	float GetLives();
 	void SetLives(float l);
 	bool GetAlive();
@@ -101,20 +98,15 @@ private:
 	int x, y;
 	int w, h;
 	int state;
-	int attackstate;
 	float lives;
 	bool alive;
-	bool WeaponThrown;
+	bool weaponThrown;
 	bool weaponHit;
 	bool hit;
 	bool hurt;
 	bool immune;
 	int immune_time;
-	//bool jumping;
-	bool attacking;
 	int step_length;
-	//int jump_alfa;
-	//int jump_y;
 
 	int seq, delay;
 	int frame_delay;

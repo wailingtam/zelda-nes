@@ -12,33 +12,41 @@ void cAquamentus::Init()
 {
 	SetFrameDelay(16);
 	SetWidthHeight(32, 32);
-	SetTile(30, 2);
+	SetTile(30, 15);
 	SetState(STATE_WALKLEFT);
 	SetStepLength(1);
 	SetLives(6.0);
-	SetAlive(true);
-	SetWeaponThrown(false);
-	SetHitbox(8, 22, 1, 22);
+	SetHitbox(7, 26, 1, 29);
 	steps = 0;
 	for (int i = 0; i < 3; ++i) {
 		Fire[i].SetWidthHeight(16, 16);
 		Fire[i].SetThrown(false);
-		Fire[i].SetSpeed(3);
+		Fire[i].SetSpeed(2);
 		Fire[i].SetFrameDelay(1);
 		Fire[i].SetHitbox(5, 11, 4, 12);
 	}
+	fireHitId = -1;
 }
 
-void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, bool swordThrown)
+void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
 {
+	if (fireHitId != -1) {
+		if (!GetWeaponHit()) {
+			Fire[fireHitId].SetThrown(false);
+			--fireUnits;
+			if (fireUnits == 0) SetWeaponThrown(false);
+		}
+		else SetWeaponHit(false);
+		Fire[fireHitId].SetHit(false);
+		fireHitId = -1;
+	}
 
 	if (steps == 0) {
 		steps = rand() % 25 + 5;
-		direction = rand() % 2 + 4;
-		SetState(direction);
+		SetState(rand() % 2 + 4);
 	}
 
-	switch (direction) {
+	switch (GetState()) {
 		case STATE_WALKLEFT:
 			MoveLeft(map);
 			break;
@@ -49,7 +57,7 @@ void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitb
 	}
 
 	if (!GetWeaponThrown()) {
-		SetWeaponThrown(rand() % 2);
+		SetWeaponThrown(rand() % 250 == 0);
 		if (GetWeaponThrown()) {
 			for (int i = 0; i < 3; ++i) {
 				int px, py;
@@ -57,20 +65,21 @@ void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitb
 				Fire[i].SetPosition(px, py);
 				Fire[i].SetThrown(true);
 				Fire[i].SetState(STATE_WALKLEFT);
+				Fire[i].ResetDistance();
 			}
+			fireUnits = 3;
 		}
 	}
 
 	steps -= 1;
 
 	if (GetWeaponThrown()) {
-		bool fireOn = false;
 		for (int i = 0; i < 3; ++i) {
 			if (Fire[i].GetThrown()) {
 				int ax, ay;
 				Fire[i].GetPosition(&ax, &ay);
 				ax -= Fire[i].GetSpeed();
-				if (ax % 4 == 0) {
+				if (GetFrame() == 0) {
 					switch (i) {
 					case 0:
 						ay += 1;
@@ -81,17 +90,27 @@ void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitb
 				}
 				Fire[i].SetPosition(ax, ay);
 				Fire[i].Logic(map, playerHitbox);
-				fireOn = true;
+				if (!Fire[i].GetThrown()) {
+					--fireUnits;
+					if (fireUnits == 0) SetWeaponThrown(false);
+				}
+				if (Fire[i].GetHit()) {
+					fireHitId = i;
+					SetWeaponHit(true);
+				}
 			}
 		}
-		
-		if (!fireOn) SetWeaponThrown(false);
 	}
 
 	SetHit(Collides(playerHitbox));
-/*	if (swordThrown) {
-		SetHurt(Collides(swordHitbox));
-	}*/
+
+	if (swordThrown) {
+		if (Collides(swordHitbox) && !GetImmune()) Hurt();
+	}
+	else if (directAttack) {
+		if (Collides(directSwordHitbox) && !GetImmune())
+			Hurt();
+	}
 }
 
 void cAquamentus::Draw(int tex_id)
@@ -108,7 +127,15 @@ void cAquamentus::Draw(int tex_id)
 	xf = xo + 32.0f / 128.0f;
 	yf = yo - 32.0f / 128.0f;
 
-	DrawRect(tex_id, xo, yo, xf, yf);
+	if (GetImmune()) {
+		int it = GetImmuneTime();
+		if (it > 0) {
+			if (it % 50 < 25) DrawRect(tex_id, xo, yo, xf, yf);
+			SetImmuneTime(--it);
+		}
+		else SetImmune(false);
+	}
+	if (!GetImmune()) DrawRect(tex_id, xo, yo, xf, yf);
 
 	if (GetWeaponThrown()) {
 		for (int i = 0; i < 3; ++i) {

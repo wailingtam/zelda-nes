@@ -30,26 +30,28 @@ bool cGame::Init()
 	cGame::setView(GAME_WIDTH, GAME_HEIGHT);
 
 	//Scene initialization
-	
 	Data.loadOverworldTextures();
 	Scene.loadOverworld();
 	Scene.loadInnerworld();
 
-	//Player(Link) initialization
-	Data.loadImage(IMG_PLAYER, "resources/tileset/greenlink2.png", GL_RGBA);
-	Player.Init();
-
-	Data.loadImage(IMG_ENEMIES, "resources/tileset/enemies.png", GL_RGBA);
-
-	srand(time(NULL));
-
-	Octorok.Init();
-	Tektike.Init();
-	Wizzrobe.Init();
-	Aquamentus.Init();
+	//Player initialization
+	Data.LoadImage(IMG_PLAYER, "resources/tileset/link.png", GL_RGBA);
+	Data.LoadImage(IMG_ENEMIES, "resources/tileset/enemies.png", GL_RGBA);
 
 	Data.loadImage(IMG_HEART, "resources/tileset/heart.png", GL_RGBA);
 	Data.loadImage(IMG_MINIMAP, "resources/minimap.png", GL_RGBA);
+
+	srand(time(NULL));
+
+	Sound.Init();
+	soundsLoading();
+	Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
+	/*Sound.SetVolume(MUSIC_CG, 0.1f);
+	Sound.SetVolume(EFFECTS_CG, 0.1f);*/
+
+	Player.Init();
+
+	spawn();
 
 	return res;
 }
@@ -79,10 +81,10 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 }
 
 //Process
-
-
 bool cGame::Process()
 {
+	Sound.UpdateSound();
+
 	bool res = true;
 	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
 
@@ -95,43 +97,15 @@ bool cGame::Process()
 	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level));
 	else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
 	else Player.Stop();
-	if (keys[97])					Player.Attack(Scene.GetMap(level));		//S = 115
-
-
-																		//Game Logic
-	cRect pchb = Player.GetCurrentHitbox();
-	Player.Logic(Scene.GetMap(level), &pchb);
-	pchb = Player.GetCurrentHitbox();
-	cRect shb = Player.GetSwordHitbox();
-	bool swordThrown = Player.GetWeaponThrown();
-	bool hitPlayer = false;
-
-
-	if (Octorok.GetAlive()) Octorok.Logic(Scene.GetMap(level), &pchb, &shb, swordThrown);
-	Tektike.Logic(Scene.GetMap(level), &pchb, &shb, swordThrown);
-	int px, py;
-	Player.GetPosition(&px, &py);
-	Wizzrobe.Logic(Scene.GetMap(level), px, py, &pchb, &shb, swordThrown);
-	Aquamentus.Logic(Scene.GetMap(level), &pchb, &shb, swordThrown);
-
-	if (Octorok.GetWeaponHit()) {
-		if (!Player.GetImmune()) {
-			Player.Hurt();
-			Octorok.SetWeaponThrown(false);
-		}
-		Octorok.SetWeaponHit(false);
+	if (keys[97]) {				//A = 97, S = 115
+		Player.Attack(Scene.GetMap(level));		
+		Sound.Play(SWORD, EFFECTS_CHANNEL1);
+		if (Player.GetThrowing())
+			Sound.Play(SWORD_SHOOT, EFFECTS_CHANNEL1);
 	}
-	if (Octorok.GetHit() /*|| Tektike.GetHit() || Wizzrobe.GetHit() || Aquamentus.GetHit()*/) {
-		if (!Player.GetImmune()) Player.Hurt();
-		Octorok.SetHit(false);
-		/*Tektike.SetHit(false);
-		Wizzrobe.SetHit(false);
-		Aquamentus.SetHit(false);*/
-	}
-	if (Octorok.GetHurt()) {
-		Player.SetWeaponThrown(false);
-		Octorok.SetHurt(false);
-	}
+
+	//Game Logic
+	gameLogic(level);
 
 	Player.countTime();
 
@@ -147,11 +121,19 @@ void cGame::Render()
 		moveCamera();
 		Scene.setDrawing(this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL);
 		Scene.Draw(Data.getOverworldIds());
-		Player.Draw(Data.GetID(IMG_PLAYER));
-		if (Octorok.GetAlive()) Octorok.Draw(Data.GetID(IMG_ENEMIES));
-		Tektike.Draw(Data.GetID(IMG_ENEMIES));
-		Wizzrobe.Draw(Data.GetID(IMG_ENEMIES));
-		Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
+
+		if (Player.GetAlive()) Player.Draw(Data.GetID(IMG_PLAYER));
+		for (int i = 0; i < vOctorok.size(); i++) {
+			if (vOctorok[i]->GetAlive()) vOctorok[i]->Draw(Data.GetID(IMG_ENEMIES));
+		}
+		for (int i = 0; i < vTektike.size(); i++) {
+			if (vTektike[i]->GetAlive()) vTektike[i]->Draw(Data.GetID(IMG_ENEMIES));
+		}
+		for (int i = 0; i < vWizzrobe.size(); i++) {
+			if (vWizzrobe[i]->GetAlive()) vWizzrobe[i]->Draw(Data.GetID(IMG_ENEMIES));
+		}
+		if (Aquamentus.GetAlive()) Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
+
 	glLoadIdentity();
 		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->w);
 		if (this->isOverworld) {
@@ -168,4 +150,132 @@ void cGame::moveCamera() {
 	int playerx, playery;
 	Player.GetPosition(&playerx, &playery);
 	glTranslatef(-playerx, -playery, 0);	//Move the camera with the player
+}
+
+
+void cGame::spawn(/*respawnOfBichos* respawn*/) {
+
+	for (int i = 0; i < 2; i++) {
+		vOctorok.push_back(new cOctorok());
+		vOctorok[i]->SetTile(5, 10 * i);
+		vTektike.push_back(new cTektike());
+		vTektike[i]->SetTile(15, 15 * i);
+		vWizzrobe.push_back(new cWizzrobe());
+		vWizzrobe[i]->SetTile(10, 10 * i);
+	}
+
+	Aquamentus.Init();
+}
+
+void cGame::soundsLoading() {
+	Sound.LoadSound(OVERWORLD_BGM, "resources/audio/Overworld_BGM.ogg", BACKGROUND);
+	Sound.LoadSound(SWORD, "resources/audio/LOZ_Sword.wav", EFFECT);
+	Sound.LoadSound(SWORD_SHOOT, "resources/audio/LOZ_Sword_Shoot.wav", EFFECT);
+	Sound.LoadSound(HURT, "resources/audio/LOZ_Hurt.wav", EFFECT);
+	Sound.LoadSound(HIT, "resources/audio/LOZ_Hit.wav", EFFECT);
+	Sound.LoadSound(KILL, "resources/audio/LOZ_Kill.wav", EFFECT);
+	Sound.LoadSound(LOW_HEALTH, "resources/audio/LOZ_LowHealth.wav", BACKGROUND);
+	Sound.LoadSound(DIE, "resources/audio/LOZ_Dead.ogg", EFFECT);
+}
+
+void cGame::gameLogic(int level) {
+	cRect pchb = Player.GetCurrentHitbox();
+	if (Player.GetAlive()) Player.Logic(Scene.GetMap(level), &pchb);
+	if (Player.GetLives() > 0 && Player.GetLives() <= 1.0 && !Player.GetLow()) {
+		Sound.Play(LOW_HEALTH, EFFECTS_CHANNEL2);
+		Player.SetLow(true);
+	}
+	else if (Player.GetLives() > 1.0 && Player.GetLow() || Player.GetLives() == 0) {
+		Sound.PauseChannel(EFFECTS_CHANNEL2);
+		Player.SetLow(false);
+	}
+	if (Player.GetLives() == 0) {
+		Sound.Play(DIE, EFFECTS_CHANNEL1);
+		Player.SetLives(-1.0);
+	}
+	pchb = Player.GetCurrentHitbox();
+	cRect shb = Player.GetSwordHitbox();
+	bool directAttack = Player.GetAttacking();
+	cRect dshb;
+	if (directAttack) dshb = Player.GetHitboxByPosition(Player.GetState());
+	bool swordThrown = Player.GetWeaponThrown();
+
+	int px, py;
+	Player.GetPosition(&px, &py);
+
+	for (int i = 0; i < vOctorok.size(); i++) {
+		if (vOctorok[i]->GetAlive()) {
+			vOctorok[i]->Logic(Scene.GetMap(level), &pchb, &shb, &dshb, swordThrown, directAttack);
+			if (vOctorok[i]->GetWeaponHit() || vOctorok[i]->GetHit()) {
+				if (!Player.GetImmune()) {
+					Player.Hurt();
+					if (vOctorok[i]->GetWeaponHit()) vOctorok[i]->SetWeaponThrown(false);
+					Sound.Play(HURT, EFFECTS_CHANNEL1);
+				}
+				vOctorok[i]->SetWeaponHit(false);
+				vOctorok[i]->SetHit(false);
+			}
+			if (vOctorok[i]->GetHurt()) {
+				Sound.Play(KILL, EFFECTS_CHANNEL1);
+				Player.SetWeaponThrown(false);
+				vOctorok[i]->SetHurt(false);
+			}
+		}
+	}
+
+	for (int i = 0; i < vTektike.size(); i++) {
+		if (vTektike[i]->GetAlive()) {
+			vTektike[i]->Logic(Scene.GetMap(level), &pchb, &shb, &dshb, swordThrown, directAttack);
+			if (vTektike[i]->GetHit()) {
+				if (!Player.GetImmune()) {
+					Player.Hurt();
+					Sound.Play(HURT, EFFECTS_CHANNEL1);
+				}
+				vTektike[i]->SetHit(false);
+			}
+			if (vTektike[i]->GetHurt()) {
+				Sound.Play(KILL, EFFECTS_CHANNEL1);
+				Player.SetWeaponThrown(false);
+				vTektike[i]->SetHurt(false);
+			}
+		}
+	}
+
+	for (int i = 0; i < vWizzrobe.size(); i++) {
+		if (vWizzrobe[i]->GetAlive()) {
+			vWizzrobe[i]->Logic(Scene.GetMap(level), px, py, &pchb, &shb, &dshb, swordThrown, directAttack);
+			if (vWizzrobe[i]->GetWeaponHit() || vWizzrobe[i]->GetHit()) {
+				if (!Player.GetImmune()) {
+					Player.Hurt();
+					Sound.Play(HURT, EFFECTS_CHANNEL1);
+					if (vWizzrobe[i]->GetWeaponHit()) vWizzrobe[i]->SetWeaponThrown(false);
+				}
+				vWizzrobe[i]->SetWeaponHit(false);
+				vWizzrobe[i]->SetHit(false);
+			}
+			if (vWizzrobe[i]->GetHurt()) {
+				Sound.Play(KILL, EFFECTS_CHANNEL1);
+				Player.SetWeaponThrown(false);
+				vWizzrobe[i]->SetHurt(false);
+			}
+		}
+	}
+
+	if (Aquamentus.GetAlive()) {
+		Aquamentus.Logic(Scene.GetMap(level), &pchb, &shb, &dshb, swordThrown, directAttack);
+		if (Aquamentus.GetWeaponHit() || Aquamentus.GetHit()) {
+			if (!Player.GetImmune()) {
+				Player.Hurt();
+				if (Aquamentus.GetWeaponHit()) Aquamentus.SetWeaponHit(false);
+				Sound.Play(HURT, EFFECTS_CHANNEL1);
+			}
+			Aquamentus.SetHit(false);
+		}
+		if (Aquamentus.GetHurt()) {
+			if (!Aquamentus.GetAlive()) Sound.Play(KILL, EFFECTS_CHANNEL1);
+			else Sound.Play(HIT, EFFECTS_CHANNEL1);
+			Player.SetWeaponThrown(false);
+			Aquamentus.SetHurt(false);
+		}
+	}
 }
