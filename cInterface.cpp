@@ -23,11 +23,12 @@ void cInterface::genList(float normalizedWith, int x, int y) {
 
 void cInterface::drawLive(int tex_id, float lives, int w) {
 	glPushMatrix();
-	int initialX = 60;
-	int gameHeight = 600;
-	double pos = (initialX * w) / gameHeight;
 
-	glTranslated(0, pos, 0);
+	//int initialX = 60;
+	//int gameHeight = 600;
+	//double pos = (initialX * w) / gameHeight;
+
+	glTranslated(MINIMAP_WIDTH + 5, MINIMAP_HEIGHT/2 - HEART_HEIGHT/2, 0);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex_id);
 	int i;

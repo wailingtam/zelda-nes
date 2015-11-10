@@ -9,7 +9,7 @@ void cPlayer::Init()
 {
 	SetFrameDelay(8);
 	SetWidthHeight(46, 46);
-	SetTile(2, 1);
+	SetTile(6, 3);
 	SetState(STATE_LOOKDOWN);
 	SetStepLength(2);
 	SetLives(3.0);

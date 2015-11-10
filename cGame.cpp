@@ -20,7 +20,8 @@ void cGame::setView(int w, int h) {
 
 	glAlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_ALPHA_TEST);
-	this->w = h;
+	this->w = w;
+	this->h = h;
 }
 
 bool cGame::Init()
@@ -152,8 +153,14 @@ void cGame::Render()
 		Tektike.Draw(Data.GetID(IMG_ENEMIES));
 		Wizzrobe.Draw(Data.GetID(IMG_ENEMIES));
 		Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
+	
+		
+	//glMatrixMode(GL_PROJECTION);
+	//glPushMatrix();
 	glLoadIdentity();
-		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->w);
+	//glOrtho(0, this->w, 0, this->h, 0, 1);
+	//glMatrixMode(GL_MODELVIEW);
+		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->h);
 		if (this->isOverworld) {
 			int x, y;
 			Player.GetPosition(&x, &y);

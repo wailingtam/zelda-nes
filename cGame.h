@@ -47,5 +47,5 @@ private:
 	cInterface Interface;
 	cData Data;
 	bool isOverworld = true;
-	int w;
+	int w, h;
 };
