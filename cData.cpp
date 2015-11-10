@@ -22,6 +22,11 @@ void cData::GetSize(int img, int *w, int *h)
 	texture[img].GetSize(w,h);
 }
 
+void cData::LoadImage(int img, char *filename, int type)
+{
+	texture[img].Load(filename, type);
+}
+
 void cData::loadImage(int img, char *filename, int type){
 	this->loadImage(img, filename, texture, type);
 }

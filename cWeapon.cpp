@@ -8,10 +8,6 @@ cWeapon::~cWeapon(void)
 {
 }
 
-void cWeapon::Init()
-{
-}
-
 void cWeapon::SetThrown(bool t)
 {
 	thrown = t;
@@ -32,6 +28,11 @@ int cWeapon::GetSpeed()
 	return speed;
 }
 
+void cWeapon::ResetDistance()
+{
+	distance = 0;
+}
+
 void cWeapon::Logic(worldMatrix *map, cRect *playerHitbox)
 {
 	int x, y;
@@ -40,21 +41,23 @@ void cWeapon::Logic(worldMatrix *map, cRect *playerHitbox)
 		switch (GetState()) {
 			case STATE_LOOKLEFT:
 			case STATE_WALKLEFT:	x -= speed;
-									if (CollidesMapWall(map, false)) thrown = false;
+									if (CollidesMapLimits(map)) thrown = false;
 									break;
 			case STATE_LOOKRIGHT:
 			case STATE_WALKRIGHT:	x += speed;
-									if (CollidesMapWall(map, true)) thrown = false;
+									if (CollidesMapLimits(map)) thrown = false;
 									break;
 			case STATE_LOOKUP:
 			case STATE_WALKUP:		y += speed;
-									if (CollidesMapWall(map, false)) thrown = false;
+									if (CollidesMapLimits(map)) thrown = false;
 									break;
 			case STATE_LOOKDOWN:
 			case STATE_WALKDOWN:	y -= speed;
-									if (CollidesMapWall(map, false)) thrown = false;	
+									if (CollidesMapLimits(map)) thrown = false;
 									break;
 		}
+		distance += speed;
+		if (distance > 200) thrown = false;
 	}
 	SetPosition(x, y);
 
@@ -121,21 +124,6 @@ void cWeapon::Draw(int tex_id, int enemy)
 				++next;
 				next %= 4;
 			}
-			/*switch (GetState()) {
-				case STATE_LOOKLEFT:
-					xo = 0.0f;
-					break;
-				case STATE_LOOKRIGHT:
-					xo = 32.0f / 128.0f;
-					break;
-				case STATE_LOOKUP:
-					xo = 16.0f / 128.0f;
-					break;
-				case STATE_LOOKDOWN:
-					xo = 48.0f / 128.0f;
-					break;
-			}
-			yo = 80.0f / 128.0f + (next*16.0f / 128.0f);*/
 			xo = next*16.0f / 128.0f;
 			yo = 128.0f;
 			NextFrame(10);

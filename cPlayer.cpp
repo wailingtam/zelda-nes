@@ -1,4 +1,3 @@
-
 #include "cPlayer.h"
 
 cPlayer::cPlayer() {}
@@ -9,21 +8,28 @@ void cPlayer::Init()
 {
 	SetFrameDelay(8);
 	SetWidthHeight(46, 46);
-	SetTile(6, 3);
+	//SetTile(6, 3);
+	SetTile(18, 5);
+	//SetTile(0, 0);
 	SetState(STATE_LOOKDOWN);
 	SetStepLength(2);
 	SetLives(3.0);
-	SetAlive(true);
-	SetWeaponThrown(false);
+	attacking = false;
+	SetImmune(true);
+	SetImmuneTime(150);
 	Sword.SetWidthHeight(46, 46);
-	Sword.SetTile(0, 0);
 	Sword.SetThrown(false);
 	Sword.SetSpeed(4);
 	SetHitbox(16, 28, 16, 30);
-	Sword.SetFourHitboxes(16, 30, 22, 23, 0);
-	Sword.SetFourHitboxes(16, 30, 22, 23, 1);
-	Sword.SetFourHitboxes(23, 24, 15, 29, 2);
-	Sword.SetFourHitboxes(23, 24, 15, 29, 3);
+	SetFourHitboxes(4, 15, 21, 24, 0);
+	SetFourHitboxes(31, 42, 21, 24, 1);
+	SetFourHitboxes(21, 24, 31, 42, 2);
+	SetFourHitboxes(22, 25, 5, 16, 3);
+	Sword.SetFourHitboxes(4, 20, 21, 24, 0);
+	Sword.SetFourHitboxes(26, 42, 21, 24, 1);
+	Sword.SetFourHitboxes(21, 24, 26, 42, 2);
+	Sword.SetFourHitboxes(22, 25, 5, 21, 3);
+	low = false;
 }
 
 void cPlayer::Logic(worldMatrix * map, cRect *playerHitbox)
@@ -37,6 +43,7 @@ void cPlayer::Logic(worldMatrix * map, cRect *playerHitbox)
 			Sword.SetPosition(px, py);
 			Sword.SetState(GetState());
 			Sword.SetThrown(true);
+			Sword.ResetDistance();
 		}
 		Sword.Logic(map, playerHitbox);
 		if (!Sword.GetThrown()) SetWeaponThrown(false);
@@ -48,50 +55,82 @@ void cPlayer::Draw(int tex_id)
 {
 	float xo, yo, xf, yf;
 
-	switch (GetState())
+	switch(GetState())
 	{
-	case STATE_LOOKLEFT:	if (GetAttackState()) {
-		xo = 46.0f / 256.0f;		yo = 184.0f / 256.0f;
-		SetAttackState(false);
-	}
-							else { xo = 46.0f / 256.0f;	yo = 46.0f / 256.0f; }
-							break;
-	case STATE_LOOKRIGHT:	if (GetAttackState()) {
-		xo = 138.0f / 256.0f;		yo = 184.0f / 256.0f;
-		SetAttackState(false);
-	}
-							else { xo = 138.0f / 256.0f;	yo = 46.0f / 256.0f; }
-							break;
+		case STATE_LOOKLEFT:	if (attacking || throwing) {
+									xo = 46.0f / 256.0f;		yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else { xo = 46.0f / 256.0f;	yo = 46.0f / 256.0f; }
+								break;
+		case STATE_LOOKRIGHT:	if (attacking || throwing) {
+									xo = 138.0f / 256.0f;		yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else { xo = 138.0f / 256.0f;	yo = 46.0f / 256.0f; }
+								break;
 
-	case STATE_LOOKUP:		if (GetAttackState()) {
-		xo = 92.0f / 256.0f;		yo = 184.0f / 256.0f;
-		SetAttackState(false);
-	}
-							else { xo = 92.0f / 256.0f;			yo = 46.0f / 256.0f; }
-							break;
+		case STATE_LOOKUP:		if (attacking || throwing) {
+									xo = 92.0f / 256.0f;		yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else { xo = 92.0f / 256.0f;			yo = 46.0f / 256.0f; }
+								break;
 
-	case STATE_LOOKDOWN:	if (GetAttackState()) {
-		xo = 0.0f;					yo = 184.0f / 256.0f;
-		SetAttackState(false);
-	}
-							else { xo = 0.0f;				yo = 46.0f / 256.0f; }
-							break;
+		case STATE_LOOKDOWN:	if (attacking || throwing) {
+									xo = 0.0f;					yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else { xo = 0.0f;				yo = 46.0f / 256.0f; }
+								break;
 
-	case STATE_WALKLEFT:	xo = 46.0f / 256.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
-		NextFrame(2);
-		break;
+		case STATE_WALKLEFT:	if (attacking || throwing) {
+									xo = 46.0f / 256.0f;		yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else {
+									xo = 46.0f / 256.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
+									NextFrame(2);
+								}
+								break;
 
-	case STATE_WALKRIGHT:	xo = 138.0f / 256.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
-		NextFrame(2);
-		break;
+		case STATE_WALKRIGHT:	if (attacking || throwing) {
+									xo = 138.0f / 256.0f;		yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else {
+									xo = 138.0f / 256.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
+									NextFrame(2);
+								}
+								break;
 
-	case STATE_WALKUP:		xo = 92.0f / 256.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
-		NextFrame(2);
-		break;
+		case STATE_WALKUP:		if (attacking || throwing) {
+									xo = 92.0f / 256.0f;		yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else {
+									xo = 92.0f / 256.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
+									NextFrame(2);
+								}
+								break;
 
-	case STATE_WALKDOWN:	xo = 0.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
-		NextFrame(2);
-		break;
+		case STATE_WALKDOWN:	if (attacking || throwing) {
+									xo = 0.0f;					yo = 184.0f / 256.0f;
+									attacking = false;
+									throwing = false;
+								}
+								else {
+									xo = 0.0f;	yo = 46.0f / 256.0f + (GetFrame()*46.0f / 256.0f);
+									NextFrame(2);
+								}
+								break;
 
 	}
 	xf = xo + 46.0f / 256.0f;
@@ -110,6 +149,15 @@ void cPlayer::Draw(int tex_id)
 	if (Sword.GetThrown()) Sword.Draw(tex_id, LINK);
 }
 
+void cPlayer::Attack(worldMatrix *map) {
+
+	if (GetLives() == 3 && !GetWeaponThrown()) {
+		SetWeaponThrown(true);
+		throwing = true;
+	}
+	else attacking = true;
+}
+
 void cPlayer::Hurt()
 {
 	SetLives(GetLives() - 0.5);
@@ -120,9 +168,28 @@ void cPlayer::Hurt()
 	}
 }
 
+bool cPlayer::GetAttacking()
+{
+	return attacking;
+}
+
+bool cPlayer::GetThrowing()
+{
+	return throwing;
+}
+
+bool cPlayer::GetLow()
+{
+	return low;
+}
+
+void cPlayer::SetLow(bool l)
+{
+	low = l;
+}
+
 cRect cPlayer::GetSwordHitbox()
 {
-
 	int position = Sword.GetState() % 4;
 	cRect shb = Sword.vHitbox[position];
 	int sx, sy;
@@ -146,6 +213,42 @@ void cPlayer::castSpell() {
 	}
 }
 
+bool cPlayer::usingSword()
+{
+	return false;
+}
+
 bool cPlayer::canUseMagic() {
 	return this->_canUseMagic;
+}
+
+
+bool cPlayer::teleport(worldMatrix *map, worldMatrix *otherMap, TeleportDirection tpdir){
+	cRect hb = GetCurrentHitbox();
+	int y1 = map->size() - 1 - hb.bottom / TILE_SIZE;	//Vectors are size - 1!
+	square *sleft = &(*map)[y1][hb.left / TILE_SIZE];
+	square *sright = &(*map)[y1][hb.right / TILE_SIZE];
+	
+	int extraY = tpdir == tpUp ? TILE_SIZE : (tpdir == tpDown? -TILE_SIZE : 0) - TILE_SIZE; //The first TILE_SIZE of the ? is to add an extra tile. The - TILE_SIZE of the end is for the box of the zelda.
+	int extraX = tpdir == tpLeft ? -TILE_SIZE : (tpdir == tpRight? TILE_SIZE : 0) - TILE_SIZE;
+	if (sleft->changeLevel) this->SetPosition(sleft->newpos.x * TILE_SIZE + extraX, (otherMap->size() - 1 - sleft->newpos.y) * TILE_SIZE + extraY); //Vectors are -1
+	else if(sright->changeLevel) this->SetPosition(sright->newpos.x * TILE_SIZE + extraX, (otherMap->size() - 1 - sright->newpos.y) * TILE_SIZE + extraY);
+	return sleft->changeLevel || sright->changeLevel;
+}
+
+void cPlayer::MoveRight(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveRight(map);
+	if (teleport(map, otherMap, tpRight)) (*isOverworld) = !(*isOverworld);
+}
+void cPlayer::MoveLeft(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveLeft(map);
+	if (teleport(map, otherMap, tpLeft)) (*isOverworld) = !(*isOverworld);
+}
+void cPlayer::MoveUp(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveUp(map);
+	if (teleport(map, otherMap, tpUp)) (*isOverworld) = !(*isOverworld);
+}
+void cPlayer::MoveDown(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveDown(map);
+	if (teleport(map, otherMap, tpDown)) (*isOverworld) = !(*isOverworld);
 }

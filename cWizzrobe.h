@@ -9,8 +9,7 @@ public:
 	cWizzrobe(void);
 	~cWizzrobe(void);
 
-	void Init();
-	void Logic(worldMatrix *map, int px, int py, cRect *playerHitbox, cRect *swordHitbox, bool swordThrown);
+	void Logic(worldMatrix *map, int px, int py, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack);
 	void Draw(int tex_id);
 
 	void NextAppearance(int nextAppearanceTime);

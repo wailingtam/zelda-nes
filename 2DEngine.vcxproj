@@ -99,6 +99,7 @@
     <ClCompile Include="cOctorok.cpp" />
     <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cScene.cpp" />
+    <ClCompile Include="cSound.cpp" />
     <ClCompile Include="cTektike.cpp" />
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="cWeapon.cpp" />
@@ -118,6 +119,7 @@
     <ClInclude Include="cOctorok.h" />
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cScene.h" />
+    <ClInclude Include="cSound.h" />
     <ClInclude Include="cTektike.h" />
     <ClInclude Include="cTexture.h" />
     <ClInclude Include="cWeapon.h" />

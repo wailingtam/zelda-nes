@@ -4,8 +4,6 @@
 #include "cTileSets.h"
 #include <iostream>
 
-#define SCENE_Xo		(2*TILE_SIZE)
-#define SCENE_Yo		TILE_SIZE
 #define SCENE_WIDTH		16
 #define SCENE_HEIGHT	16
 
@@ -61,6 +59,8 @@ public:
 	void Draw(int * texs_id);
 	worldMatrix* GetMap(const int level);
 
+	void DrawAboveBichos(int * texs_id);
+
 	void setDrawing(int level);
 
 
@@ -76,8 +76,20 @@ private:
 	std::vector<changeLevelPosition> changepos = { //for array
 		{	//for struct 1
 			{
-				{ 91 , 20 },	//Overworld: x, y
-				{ 42 , 17 }		//Innerworld: x, y
+				{ 39 , 38 },	//Overworld: x, y
+				{ 17 , 42 }		//Innerworld: x, y
+			},
+			{
+				{ 39 , 38 },	//Overworld: x, y
+				{ 18 , 42 }		//Innerworld: x, y
+			},
+			{
+				{ 84 , 27 },	//Overworld: x, y
+				{ 46 , 48 }		//Innerworld: x, y
+			},
+			{
+				{ 85 , 27 },	//Overworld: x, y
+				{ 47 , 48 }		//Innerworld: x, y
 			}
 		}
 	};

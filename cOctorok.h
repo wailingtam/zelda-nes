@@ -9,8 +9,7 @@ public:
 	cOctorok(void);
 	~cOctorok(void);
 
-	void Init();
-	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, bool swordThrown);
+	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack);
 	void Draw(int tex_id);
 
 private:

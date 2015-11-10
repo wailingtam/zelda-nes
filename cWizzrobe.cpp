@@ -2,35 +2,29 @@
 
 cWizzrobe::cWizzrobe(void)
 {
+	SetFrameDelay(8);
+	SetWidthHeight(16, 16);
+	SetLives(1.0);
+	appearanceTime = 0;
+	disappeared = false;
+	delay2 = 0;
+	Ray.SetWidthHeight(16, 16);
+	Ray.SetThrown(false);
+	Ray.SetSpeed(2);
+	Ray.SetFrameDelay(1);
+
+	SetHitbox(2, 14, 2, 14);
+	Ray.SetHitbox(1, 15, 1, 15);
 }
 
 cWizzrobe::~cWizzrobe(void)
 {
 }
 
-void cWizzrobe::Init()
+void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
 {
-	SetFrameDelay(8);
-	SetWidthHeight(16, 16);
-	SetTile(15, 2);
-	SetState(STATE_LOOKRIGHT);
-	SetLives(1.0);
-	SetAlive(true);
-	SetWeaponThrown(false);
-	appearanceTime = 0;
-	disappeared = false;
-	Ray.SetWidthHeight(16, 16);
-	Ray.SetTile(15, 2);
-	Ray.SetThrown(false);
-	Ray.SetSpeed(2);
-	Ray.SetFrameDelay(1);
-
-	SetHitbox(4, 12, 3, 13);
-	Ray.SetHitbox(1, 15, 1, 15);
-}
-
-void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cRect *swordHitbox, bool swordThrown)
-{
+	if (!GetWeaponHit()) Ray.SetHit(false);
+	if (!GetWeaponThrown()) Ray.SetThrown(false);
 
 	if (GetAppearanceTime() == 0) {
 		int sameRow = rand() % 2;
@@ -70,15 +64,23 @@ void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cR
 			Ray.SetPosition(px, py);
 			Ray.SetState(GetState());
 			Ray.SetThrown(true);
+			Ray.ResetDistance();
 		}
 		Ray.Logic(map, playerHitbox);
 		if (!Ray.GetThrown()) SetWeaponThrown(false);
 	}
 
+	if (Ray.GetHit()) SetWeaponHit(true);
+
 	SetHit(Collides(playerHitbox));
-/*	if (swordThrown) {
-		SetHurt(Collides(swordHitbox));
-	}*/
+
+	if (swordThrown) {
+		if (Collides(swordHitbox) && !GetImmune()) Hurt();
+	}
+	else if (directAttack) {
+		if (Collides(directSwordHitbox) && !GetImmune())
+			Hurt();
+	}
 }
 
 void cWizzrobe::Draw(int tex_id)
