@@ -12,12 +12,12 @@ void cInterface::init(){
 	
 }
 
-void cInterface::genList(float normalizedWith, int x, int y) {
+void cInterface::genList(float normalizedWith, int x, int y, int width, int height) {
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 1); glVertex2d(x, y);
-		glTexCoord2f(normalizedWith, 1); glVertex2d(x + HEART_WIDTH*normalizedWith, y);
-		glTexCoord2f(normalizedWith, 0); glVertex2d(x + HEART_WIDTH*normalizedWith, y + HEART_HEIGHT);
-		glTexCoord2f(0, 0); glVertex2d(x, y + HEART_HEIGHT);
+		glTexCoord2f(normalizedWith, 1); glVertex2d(x + width*normalizedWith, y);
+		glTexCoord2f(normalizedWith, 0); glVertex2d(x + width*normalizedWith, y + height);
+		glTexCoord2f(0, 0); glVertex2d(x, y + height);
 	glEnd();
 }
 
@@ -28,12 +28,33 @@ void cInterface::drawLive(int tex_id, float lives, int w) {
 	//int gameHeight = 600;
 	//double pos = (initialX * w) / gameHeight;
 
-	glTranslated(MINIMAP_WIDTH + 5, MINIMAP_HEIGHT/2 - HEART_HEIGHT/2, 0);
+	glTranslated(MAGIC_WIDTH + MARGIN + BOW_WIDTH + MARGIN + MINIMAP_WIDTH + MARGIN, MINIMAP_HEIGHT/2 - HEART_HEIGHT/2, 0);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex_id);
 	int i;
-	for (i = 0; i < int(lives); i++) genList(1, i * HEART_WIDTH, 0);
-	if (lives != int(lives)) genList(0.5, i * HEART_WIDTH, 0);
+	for (i = 0; i < int(lives); i++) genList(1, i * HEART_WIDTH, 0, HEART_WIDTH, HEART_HEIGHT);
+	if (lives != int(lives)) genList(0.5, i * HEART_WIDTH, 0, HEART_WIDTH, HEART_HEIGHT);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+void cInterface::drawWeapon(int tex_id, bool isSword) {
+	glPushMatrix();
+	glTranslated(MINIMAP_WIDTH + MARGIN, MINIMAP_HEIGHT/2 - (isSword? SWORD_HEIGHT : BOW_HEIGHT)/2, 0);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+	if (isSword) this->genList(1, 0, 0, SWORD_WIDTH, SWORD_HEIGHT);
+	else this->genList(1, 0, 0, BOW_WIDTH, BOW_HEIGHT);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+void cInterface::drawMagic(int tex_id) {
+	glPushMatrix();
+	glTranslated(MINIMAP_WIDTH + MARGIN + BOW_WIDTH + MARGIN, MINIMAP_HEIGHT / 2 - MAGIC_HEIGHT/ 2, 0);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+	this->genList(1, 0, 0, MAGIC_WIDTH, MAGIC_HEIGHT);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }

@@ -115,7 +115,7 @@ bool cBicho::isBlocking(worldMatrix *map){
 	int y2 = map->size() - 1 - (hb.bottom - 1) / TILE_SIZE;
 	return (*map)[y1][hb.left / TILE_SIZE].blocking && !(*map)[y1][hb.left / TILE_SIZE].changeLevel
 		|| (*map)[y1][hb.right / TILE_SIZE].blocking && !(*map)[y1][hb.right / TILE_SIZE].changeLevel
-		|| (*map)[y2][hb.right / TILE_SIZE].blocking && !(*map)[y2][hb.right / TILE_SIZE].changeLevel
+		|| (*map)[y2][hb.left / TILE_SIZE].blocking && !(*map)[y2][hb.left / TILE_SIZE].changeLevel
 		|| (*map)[y2][hb.right / TILE_SIZE].blocking && !(*map)[y2][hb.right / TILE_SIZE].changeLevel;
 }
 

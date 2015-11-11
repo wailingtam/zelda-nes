@@ -54,7 +54,7 @@ private:
 	bool throwing;
 	bool low; 
 	
-	bool _canUseMagic = false;
+	bool _canUseMagic = true;
 	unsigned int countdown = SPELL_RECHARGE_TIME;
 	unsigned int initialTime = glutGet(GLUT_ELAPSED_TIME);
 };

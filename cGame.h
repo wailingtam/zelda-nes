@@ -24,7 +24,7 @@ struct respawnOfBichos{
 struct zone {
 	std::vector<position> vertexs;
 	respawnOfBichos respawn;
-	bool overworld;
+	//bool overworld;
 };
 
 typedef std::vector<zone> zones;
@@ -81,7 +81,7 @@ private:
 				{ {46, 62}, {32, 48} }, //Tektikes
 				{  }, //Wizzrobes
 			},
-			true
+		//	true
 
 		},
 		{ //Zone village
@@ -89,11 +89,11 @@ private:
 				{ 11,42 },{ 63,42 },{ 63,20 },{ 11,20 }
 			},
 			{	//Respawn
-				{ { 27, 18 }  }, //Octoroks
-				{ }, //Tektikes
-				{ { 25, 38 },{ 46, 28 } }, //Wizzrobes
+				{ { 31, 38 }, {32, 32}, {44,36}, {51,31}  }, //Octoroks
+				{ {36,24} }, //Tektikes
+				{  }, //Wizzrobes
 			},
-			true
+		//	true
 
 		},
 		{ //Zone cementery
@@ -101,11 +101,11 @@ private:
 				{ 37,21 },{ 61,21 },{ 61,10 },{ 37,10 }
 			},
 			{	//Respawn
-				{ { 38, 13 } }, //Octoroks
+				{ { 48, 14 } }, //Octoroks
 				{}, //Tektikes
-				{ { 25, 38 },{ 46, 28 } }, //Wizzrobes
+				{ { 42, 14 },{ 59, 17 } }, //Wizzrobes
 			},
-			true
+		//	true
 
 		},
 		{ //Zone castle
@@ -114,21 +114,22 @@ private:
 			},
 			{	//Respawn
 				{ { 27, 18 } }, //Octoroks
-				{}, //Tektikes
+				{ { 83,28 },{ 86,28 } }, //Tektikes
 				{ { 25, 38 },{ 46, 28 } }, //Wizzrobes
 			},
-			true
+		//	true
 		},
 		{ //Zone inner castle
 			{  //Vertexs
 				{ 41,49 },{ 53,49 },{ 53,19 },{ 41,19 }
 			},
 			{	//Respawn
-				{ { 27, 18 } }, //Octoroks
-				{}, //Tektikes
-				{ { 25, 38 },{ 46, 28 } }, //Wizzrobes
+				{ { 44, 35 },{ 50, 36 } }, //Octoroks
+				{ { 44, 28 },{ 49, 28 } }, //Tektikes
+				{ { 46, 43 },{ 47, 43 } }, //Wizzrobes
+				{46, 30}  //Aquamentus
 			},
-			false
+		//	false
 		}
 	};
 };

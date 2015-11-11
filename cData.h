@@ -6,7 +6,7 @@
 #include <iostream>
 
 //Image array size
-#define NUM_IMG		5
+#define NUM_IMG		8
 
 //Image identifiers
 #define IMG_BLOCKS	1
@@ -14,6 +14,9 @@
 #define IMG_ENEMIES 3
 #define IMG_HEART   4
 #define IMG_MINIMAP 5
+#define IMG_SWORD   6
+#define IMG_BOW     7
+#define IMG_MAGIC   8
 /*
 #define IMG_ENEMY1	2
 #define IMG_ENEMY2	3

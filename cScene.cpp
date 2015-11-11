@@ -77,7 +77,7 @@ void cScene::loadLevel(unsigned int level) {
 					glTexCoord2f(initial_pos.first + texture_tile_sizes.first, initial_pos.second); glVertex2i(x + tile_width, y + tile_height);
 					glTexCoord2f(initial_pos.first, initial_pos.second); glVertex2i(x, y + tile_height);
 
-					if((*it).first != "object4" && (*it).first != "roof") this->setPosInMap(map, &ctiles, i, j, level, gid);
+					if((*it).first != "roof" && (*it).first != "super") this->setPosInMap(map, &ctiles, i, j, level, gid);
 				}
 				x += tile_width;
 			}

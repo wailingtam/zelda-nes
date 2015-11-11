@@ -41,6 +41,9 @@ bool cGame::Init()
 
 	Data.loadImage(IMG_HEART, "resources/tileset/heart.png", GL_RGBA);
 	Data.loadImage(IMG_MINIMAP, "resources/minimap.png", GL_RGBA);
+	Data.loadImage(IMG_BOW, "resources/tileset/bow.png", GL_RGBA);
+	Data.loadImage(IMG_SWORD, "resources/tileset/sword.png", GL_RGBA);
+	Data.LoadImage(IMG_MAGIC, "resources/tileset/magic.png", GL_RGBA);
 
 	srand(time(NULL));
 
@@ -116,7 +119,7 @@ bool cGame::Process()
 	}
 
 	Player.GetPosition(&newx, &newy);
-	//int zone = this->getNewSpanZone(oldx, oldy, newx, newy, levelChanged);
+	//int zone = this->getNewSpanZone(oldx, oldy, newx, newy, this->isOverworld); Zone 4 es la única que no está en el overworld
 	int zone = -1;
 	if (zone != -1) this->spawn(zone);
 
@@ -156,6 +159,8 @@ void cGame::Render()
 	//glOrtho(0, this->w, 0, this->h, 0, 1);
 	//glMatrixMode(GL_MODELVIEW);
 		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->h);
+		Interface.drawWeapon(Player.usingSword()? Data.GetID(IMG_SWORD) : Data.GetID(IMG_BOW), Player.usingSword());
+		if(Player.canUseMagic()) Interface.drawMagic(Data.GetID(IMG_MAGIC));
 		if (this->isOverworld) {
 			int x, y;
 			Player.GetPosition(&x, &y);

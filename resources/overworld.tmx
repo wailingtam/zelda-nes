@@ -23828,7 +23828,7 @@
    <tile gid="526"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="631"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -23929,7 +23929,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="631"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -52602,7 +52602,7 @@
    <tile gid="0"/>
   </data>
  </layer>
- <layer name="object4" width="100" height="70">
+ <layer name="super" width="100" height="70">
   <data>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -58848,7 +58848,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="633"/>
-   <tile gid="631"/>
+   <tile gid="0"/>
    <tile gid="575"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -58949,7 +58949,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="631"/>
+   <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
