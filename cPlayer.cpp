@@ -36,7 +36,7 @@ void cPlayer::Logic(worldMatrix * map, cRect *playerHitbox)
 {
 	if (!GetWeaponThrown() && Sword.GetThrown()) Sword.SetThrown(false);
 
-	if (GetWeaponThrown()) {
+	/*if (GetWeaponThrown()) {
 		if (!Sword.GetThrown()) {
 			int px, py;
 			GetPosition(&px, &py);
@@ -48,7 +48,21 @@ void cPlayer::Logic(worldMatrix * map, cRect *playerHitbox)
 		Sword.Logic(map, playerHitbox);
 		if (!Sword.GetThrown()) SetWeaponThrown(false);
 	}
-	else Sword.SetThrown(false);
+	else Sword.SetThrown(false);*/
+
+	if (GetWeaponThrown()) {
+		int px, py;
+		GetPosition(&px, &py);
+		if (!Sword.GetThrown()) {
+			Sword.SetPosition(px, py);
+			Sword.SetState(GetState());
+			Sword.SetThrown(true);
+		}
+		Sword.SetObjective(px, py);
+		Sword.Logic(map, playerHitbox);
+		if (!Sword.GetThrown()) SetWeaponThrown(false);
+	}
+
 }
 
 void cPlayer::Draw(int tex_id)

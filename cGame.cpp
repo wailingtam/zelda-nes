@@ -47,8 +47,8 @@ bool cGame::Init()
 	Sound.Init();
 	soundsLoading();
 	Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
-	/*Sound.SetVolume(MUSIC_CG, 0.1f);
-	Sound.SetVolume(EFFECTS_CG, 0.1f);*/
+	Sound.SetVolume(MUSIC_CG, 0.1f);
+	Sound.SetVolume(EFFECTS_CG, 0.1f);
 
 	Player.Init();
 

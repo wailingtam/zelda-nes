@@ -2,6 +2,7 @@
 
 #include "cBicho.h"
 #include "cWeapon.h"
+#include "cBoomerang.h"
 
 #define SPELL_RECHARGE_TIME 15000
 
@@ -47,7 +48,8 @@ public:
 	cRect GetSwordHitbox();
 
 private:
-	cWeapon Sword;
+	cBoomerang Sword;
+	cBoomerang Boomerang;
 	bool attacking;
 	bool throwing;
 	bool low; 
