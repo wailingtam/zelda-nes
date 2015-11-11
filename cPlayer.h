@@ -4,9 +4,9 @@
 #include "cWeapon.h"
 #include "cBoomerang.h"
 
-#define PLAYER_START_CX		3
-#define PLAYER_START_CY		2
-#define SPELL_RECHARGE_TIME 3
+#define SPELL_RECHARGE_TIME 15000
+
+
 
 class cPlayer: public cBicho
 {
@@ -27,7 +27,23 @@ public:
 	void SetLow(bool l);
 	void castSpell();
 
+	bool usingSword();
 	bool canUseMagic();
+
+	enum TeleportDirection {
+		tpUp, tpDown, tpLeft, tpRight
+	};
+
+
+	bool teleport(worldMatrix * map, worldMatrix * otherMap, TeleportDirection tpdir);
+
+	void MoveRight(worldMatrix * map, worldMatrix * otherMap, bool * isOverworld);
+
+	void MoveLeft(worldMatrix * map, worldMatrix * otherMap, bool * isOverworld);
+
+	void MoveUp(worldMatrix * map, worldMatrix * otherMap, bool * isOverworld);
+
+	void MoveDown(worldMatrix * map, worldMatrix * otherMap, bool * isOverworld);
 
 	cRect GetSwordHitbox();
 

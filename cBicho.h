@@ -48,8 +48,7 @@ public:
 
 	bool Collides(cRect *rc);
 	bool CollidesMapLimits(worldMatrix * map);
-	bool CollidesMapWall(worldMatrix *map, bool right);
-	bool CollidesMapFloor(worldMatrix *map);
+	bool isBlocking(worldMatrix * map);
 	void GetArea(cRect *rc);
 	void DrawRect(int tex_id, float xo, float yo, float xf, float yf);
 

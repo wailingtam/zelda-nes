@@ -82,6 +82,8 @@ bool cBicho::Collides(cRect *rc)
 
 bool cBicho::CollidesMapLimits(worldMatrix *map) {
 	
+	if (isBlocking(map)) return true;
+
 	cRect hb = GetCurrentHitbox();
 	bool out = false;
 
@@ -107,60 +109,14 @@ bool cBicho::CollidesMapLimits(worldMatrix *map) {
 
 }
 
-bool cBicho::CollidesMapWall(worldMatrix *map, bool right)
-{
-	int tile_x, tile_y;
-	int j;
-	int width_tiles, height_tiles;
-
-	tile_x = x / TILE_SIZE;
-	tile_y = y / TILE_SIZE;
-	width_tiles = w / TILE_SIZE;
-	height_tiles = h / TILE_SIZE;
-
-	if (right)	tile_x += width_tiles;
-
-	//for (j = 0; j<height_tiles; j++)
-	//{
-	//	if (map[tile_x + ((tile_y + j)*SCENE_WIDTH)] != 0)	return true;
-	//}
-
-	return false;
-}
-
-bool cBicho::CollidesMapFloor(worldMatrix *map)
-{
-	int tile_x, tile_y;
-	int width_tiles;
-	bool on_base;
-	int i;
-
-	tile_x = x / TILE_SIZE;
-	tile_y = y / TILE_SIZE;
-
-	width_tiles = w / TILE_SIZE;
-	if ((x % TILE_SIZE) != 0) width_tiles++;
-
-	on_base = false;
-	i = 0;
-	while ((i<width_tiles) && !on_base)
-	{
-		if ((y % TILE_SIZE) == 0)
-		{
-			//if (map[(tile_x + i) + ((tile_y - 1) * SCENE_WIDTH)] != 0)
-				//on_base = true;
-		}
-		else
-		{
-		//	if (map[(tile_x + i) + (tile_y * SCENE_WIDTH)] != 0)
-		//	{
-		//		y = (tile_y + 1) * TILE_SIZE;
-		//		on_base = true;
-		//	}
-		}
-		i++;
-	}
-	return on_base;
+bool cBicho::isBlocking(worldMatrix *map){
+	cRect hb = GetCurrentHitbox();
+	int y1 = map->size() - 1 - hb.bottom / TILE_SIZE;	//Vectors are size - 1!
+	int y2 = map->size() - 1 - (hb.bottom - 1) / TILE_SIZE;
+	return (*map)[y1][hb.left / TILE_SIZE].blocking && !(*map)[y1][hb.left / TILE_SIZE].changeLevel
+		|| (*map)[y1][hb.right / TILE_SIZE].blocking && !(*map)[y1][hb.right / TILE_SIZE].changeLevel
+		|| (*map)[y2][hb.right / TILE_SIZE].blocking && !(*map)[y2][hb.right / TILE_SIZE].changeLevel
+		|| (*map)[y2][hb.right / TILE_SIZE].blocking && !(*map)[y2][hb.right / TILE_SIZE].changeLevel;
 }
 
 void cBicho::GetArea(cRect *rc)
@@ -175,8 +131,8 @@ void cBicho::DrawRect(int tex_id, float xo, float yo, float xf, float yf)
 {
 	int screen_x, screen_y;
 
-	screen_x = x + SCENE_Xo;
-	screen_y = y + SCENE_Yo + (BLOCK_SIZE - TILE_SIZE);
+	screen_x = x;
+	screen_y = y;
 
 	glEnable(GL_TEXTURE_2D);
 

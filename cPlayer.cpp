@@ -8,7 +8,9 @@ void cPlayer::Init()
 {
 	SetFrameDelay(8);
 	SetWidthHeight(46, 46);
-	SetTile(2, 2);
+	//SetTile(6, 3);
+	SetTile(18, 5);
+	//SetTile(0, 0);
 	SetState(STATE_LOOKDOWN);
 	SetStepLength(2);
 	SetLives(3.0);
@@ -225,6 +227,42 @@ void cPlayer::castSpell() {
 	}
 }
 
+bool cPlayer::usingSword()
+{
+	return false;
+}
+
 bool cPlayer::canUseMagic() {
 	return this->_canUseMagic;
+}
+
+
+bool cPlayer::teleport(worldMatrix *map, worldMatrix *otherMap, TeleportDirection tpdir){
+	cRect hb = GetCurrentHitbox();
+	int y1 = map->size() - 1 - hb.bottom / TILE_SIZE;	//Vectors are size - 1!
+	square *sleft = &(*map)[y1][hb.left / TILE_SIZE];
+	square *sright = &(*map)[y1][hb.right / TILE_SIZE];
+	
+	int extraY = tpdir == tpUp ? TILE_SIZE : (tpdir == tpDown? -TILE_SIZE : 0) - TILE_SIZE; //The first TILE_SIZE of the ? is to add an extra tile. The - TILE_SIZE of the end is for the box of the zelda.
+	int extraX = tpdir == tpLeft ? -TILE_SIZE : (tpdir == tpRight? TILE_SIZE : 0) - TILE_SIZE;
+	if (sleft->changeLevel) this->SetPosition(sleft->newpos.x * TILE_SIZE + extraX, (otherMap->size() - 1 - sleft->newpos.y) * TILE_SIZE + extraY); //Vectors are -1
+	else if(sright->changeLevel) this->SetPosition(sright->newpos.x * TILE_SIZE + extraX, (otherMap->size() - 1 - sright->newpos.y) * TILE_SIZE + extraY);
+	return sleft->changeLevel || sright->changeLevel;
+}
+
+void cPlayer::MoveRight(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveRight(map);
+	if (teleport(map, otherMap, tpRight)) (*isOverworld) = !(*isOverworld);
+}
+void cPlayer::MoveLeft(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveLeft(map);
+	if (teleport(map, otherMap, tpLeft)) (*isOverworld) = !(*isOverworld);
+}
+void cPlayer::MoveUp(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveUp(map);
+	if (teleport(map, otherMap, tpUp)) (*isOverworld) = !(*isOverworld);
+}
+void cPlayer::MoveDown(worldMatrix *map, worldMatrix *otherMap, bool *isOverworld) {
+	cBicho::MoveDown(map);
+	if (teleport(map, otherMap, tpDown)) (*isOverworld) = !(*isOverworld);
 }

@@ -20,7 +20,8 @@ void cGame::setView(int w, int h) {
 
 	glAlphaFunc(GL_GREATER, 0.05f);
 	glEnable(GL_ALPHA_TEST);
-	this->w = h;
+	this->w = w;
+	this->h = h;
 }
 
 bool cGame::Init()
@@ -51,7 +52,7 @@ bool cGame::Init()
 
 	Player.Init();
 
-	spawn();
+	spawn(0);
 
 	return res;
 }
@@ -84,25 +85,40 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 bool cGame::Process()
 {
 	Sound.UpdateSound();
-
+	int oldx, oldy, newx, newy;
+	Player.GetPosition(&oldx, &oldy);
 	bool res = true;
 	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
-
+	int otherLevel = this->isOverworld ? INNERWORLD_LEVEL : OVERWORLD_LEVEL;
+	bool oldLevel = this->isOverworld;
+	bool levelChanged = false;
 	//Process Input
 	if (keys[27])	res = false;
-
-	if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap(level));
-	else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap(level));
-	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap(level));
-	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level));
+	
+	if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+	else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
 	else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
-	else Player.Stop();
-	if (keys[97]) {				//A = 97, S = 115
+	else if (keys[97]) {				//A = 97, S = 115
 		Player.Attack(Scene.GetMap(level));		
 		Sound.Play(SWORD, EFFECTS_CHANNEL1);
 		if (Player.GetThrowing())
 			Sound.Play(SWORD_SHOOT, EFFECTS_CHANNEL1);
 	}
+	else Player.Stop();
+
+	if (oldLevel != this->isOverworld) {  //We change 'level' value accordingly
+		levelChanged = true;
+		int aux = level;
+		level = otherLevel;
+		otherLevel = level;
+	}
+
+	Player.GetPosition(&newx, &newy);
+	//int zone = this->getNewSpanZone(oldx, oldy, newx, newy, levelChanged);
+	int zone = -1;
+	if (zone != -1) this->spawn(zone);
 
 	//Game Logic
 	gameLogic(level);
@@ -121,7 +137,7 @@ void cGame::Render()
 		moveCamera();
 		Scene.setDrawing(this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL);
 		Scene.Draw(Data.getOverworldIds());
-
+		
 		if (Player.GetAlive()) Player.Draw(Data.GetID(IMG_PLAYER));
 		for (int i = 0; i < vOctorok.size(); i++) {
 			if (vOctorok[i]->GetAlive()) vOctorok[i]->Draw(Data.GetID(IMG_ENEMIES));
@@ -134,8 +150,12 @@ void cGame::Render()
 		}
 		if (Aquamentus.GetAlive()) Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
 
+		Scene.DrawAboveBichos(Data.getOverworldIds());
+
 	glLoadIdentity();
-		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->w);
+	//glOrtho(0, this->w, 0, this->h, 0, 1);
+	//glMatrixMode(GL_MODELVIEW);
+		Interface.drawLive(Data.GetID(IMG_HEART), Player.GetLives(), this->h);
 		if (this->isOverworld) {
 			int x, y;
 			Player.GetPosition(&x, &y);
@@ -147,24 +167,33 @@ void cGame::Render()
 
 
 void cGame::moveCamera() {
+	//glTranslatef(18 , 5 , 0);
 	int playerx, playery;
 	Player.GetPosition(&playerx, &playery);
 	glTranslatef(-playerx, -playery, 0);	//Move the camera with the player
+	glTranslatef(w / (2.0 * ZOOM_FACTOR) - 24, ((h / ZOOM_FACTOR) / 2.0) - 24, 0);
 }
 
 
-void cGame::spawn(/*respawnOfBichos* respawn*/) {
-
-	for (int i = 0; i < 2; i++) {
+void cGame::spawn(int zone) {
+	respawnOfBichos *res = &this->respawnZones[zone].respawn;
+	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
+	int i = 0;
+	for (position pos : res->octorocks) {
 		vOctorok.push_back(new cOctorok());
-		vOctorok[i]->SetTile(5, 10 * i);
-		vTektike.push_back(new cTektike());
-		vTektike[i]->SetTile(15, 15 * i);
-		vWizzrobe.push_back(new cWizzrobe());
-		vWizzrobe[i]->SetTile(10, 10 * i);
+		vOctorok[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);
 	}
-
-	Aquamentus.Init();
+	i = 0;
+	for (position pos : res->tektikes) {
+		vTektike.push_back(new cTektike());
+		vTektike[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);
+	}
+	i = 0;
+	for (position pos : res->wizzrobes) {
+		vWizzrobe.push_back(new cWizzrobe());
+		vWizzrobe[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);
+	}
+	//Aquamentus.Init(); ??
 }
 
 void cGame::soundsLoading() {

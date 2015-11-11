@@ -2,8 +2,8 @@
 #include "cTexture.h"
 #include <iostream>
 
-#define HEART_WIDTH 32/2 //In game, not texture
-#define HEART_HEIGHT 28/2
+#define HEART_WIDTH 32/4 //In game, not texture
+#define HEART_HEIGHT 28/4
 
 #define MINIMAP_WIDTH 25
 #define MINIMAP_HEIGHT 18

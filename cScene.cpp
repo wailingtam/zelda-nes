@@ -77,7 +77,7 @@ void cScene::loadLevel(unsigned int level) {
 					glTexCoord2f(initial_pos.first + texture_tile_sizes.first, initial_pos.second); glVertex2i(x + tile_width, y + tile_height);
 					glTexCoord2f(initial_pos.first, initial_pos.second); glVertex2i(x, y + tile_height);
 
-					this->setPosInMap(map, &ctiles, i, j, level, gid);
+					if((*it).first != "object4" && (*it).first != "roof") this->setPosInMap(map, &ctiles, i, j, level, gid);
 				}
 				x += tile_width;
 			}
@@ -90,13 +90,13 @@ void cScene::loadLevel(unsigned int level) {
 
 ///sets in the global map if the position is blocking or there is a changelevel on it.
 void cScene::setPosInMap(worldMatrix* map, cTileSets* ctiles, const int i, const int j, const int level, const int gid) {
-	(*map)[i][j].actualpos = { i,j };
+	(*map)[i][j].actualpos = { j,i };
 	for (changeLevelPosition changeLevel : this->changepos) {
-		if (OVERWORLD_LEVEL == level && i == changeLevel.overworld.x && j == changeLevel.overworld.y) {
+		if (OVERWORLD_LEVEL == level && j == changeLevel.overworld.x && i == changeLevel.overworld.y) {
 			(*map)[i][j].changeLevel = true;
 			(*map)[i][j].newpos = changeLevel.innerworld;
 		}
-		else if (OVERWORLD_LEVEL != level && i == changeLevel.innerworld.x && j == changeLevel.innerworld.y) {
+		else if (OVERWORLD_LEVEL != level && j == changeLevel.innerworld.x && i == changeLevel.innerworld.y) {
 			(*map)[i][j].changeLevel = true;
 			(*map)[i][j].newpos = changeLevel.overworld;
 		}
@@ -106,9 +106,6 @@ void cScene::setPosInMap(worldMatrix* map, cTileSets* ctiles, const int i, const
 	if (it != tileset->property.end()) {
 		auto it2 = it->second.find("blocking");
 		if (it2 != it->second.end()) {
-			if (i == 91 && j == 20) {
-				int a =3;
-			}
 			(*map)[i][j].blocking = true;
 		}
 	}
@@ -154,7 +151,7 @@ void cScene::setDrawing(int level) {
 void cScene::Draw(int* texs_id){
 	glEnable(GL_TEXTURE_2D);
 	int gl_list = this->firstIdOfActualLists;
-	for (int i = 0; i < this->numberOfLayers; i++) {	
+	for (int i = 0; i < this->numberOfLayers - 2; i++) {	
 		glBindTexture(GL_TEXTURE_2D, texs_id[0]);
 		glCallList(gl_list++);
 	}
@@ -163,3 +160,14 @@ void cScene::Draw(int* texs_id){
 worldMatrix* cScene::GetMap(const int level){
 	return (level == OVERWORLD_LEVEL) ? &this->overworldMap : &this->innerworldMap;
 }
+
+void cScene::DrawAboveBichos(int* texs_id) {
+	glEnable(GL_TEXTURE_2D);
+	int gl_list = this->firstIdOfActualLists + this->numberOfLayers - 2;
+	for (int i = this->numberOfLayers - 2; i < this->numberOfLayers; i++) {
+		glBindTexture(GL_TEXTURE_2D, texs_id[0]);
+		glCallList(gl_list++);
+	}
+	glDisable(GL_TEXTURE_2D);
+}
+
