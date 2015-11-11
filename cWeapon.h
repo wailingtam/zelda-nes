@@ -17,9 +17,11 @@ public:
 	void Logic(worldMatrix *map, cRect *playerHitbox);
 	void Draw(int tex_id, int enemy);
 
+protected:
+	int distance;
+
 private:
 	bool thrown;
 	int speed;
 	int next;
-	int distance;
 };

@@ -2,6 +2,7 @@
 
 #include "cBicho.h"
 #include "cWeapon.h"
+#include "cBoomerang.h"
 
 #define PLAYER_START_CX		3
 #define PLAYER_START_CY		2
@@ -31,7 +32,8 @@ public:
 	cRect GetSwordHitbox();
 
 private:
-	cWeapon Sword;
+	cBoomerang Sword;
+	cBoomerang Boomerang;
 	bool attacking;
 	bool throwing;
 	bool low; 
