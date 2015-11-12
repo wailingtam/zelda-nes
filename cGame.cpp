@@ -215,7 +215,10 @@ void cGame::spawn(int zone) {
 		vWizzrobe.push_back(new cWizzrobe());
 		vWizzrobe[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);
 	}
-	if (zone == 4) Aquamentus.Init();
+	if (zone == 4) {
+		Aquamentus.Init();
+		Aquamentus.SetTile(res->aquamentus.x, Scene.GetMap(level)->size() - res->aquamentus.y);
+	}
 }
 
 int cGame::getNewSpanZone()
