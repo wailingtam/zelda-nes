@@ -32,12 +32,12 @@ void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cR
 			int wx, wy;
 			if (!sameRow) {
 				wx = px + TILE_SIZE;
-				wy = rand() % (25 * TILE_SIZE) + 1 * TILE_SIZE;
+				wy = rand() % (10 * TILE_SIZE) + 1 * TILE_SIZE;
 				if (wy > py) SetState(STATE_LOOKDOWN);
 				else SetState(STATE_LOOKUP);
 			}
 			else {
-				wx = rand() % (31 * TILE_SIZE) + 2 * TILE_SIZE;
+				wx = rand() % (10 * TILE_SIZE) + 2 * TILE_SIZE;
 				wy = py + TILE_SIZE;
 				if (wx > px) SetState(STATE_LOOKLEFT);
 				else SetState(STATE_LOOKRIGHT);

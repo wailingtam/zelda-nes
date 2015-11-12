@@ -12,9 +12,8 @@ public:
 	void SetThrown(bool t);
 	bool GetThrown();
 	void SetSpeed(int s);
-	int GetSpeed();
+	int  GetSpeed();
 	void ResetDistance();
-	cRect GetCurrentHitbox();
 	void Logic(worldMatrix *map, cRect *playerHitbox);
 	void Draw(int tex_id, int enemy);
 
