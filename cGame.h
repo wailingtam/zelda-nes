@@ -52,6 +52,7 @@ public:
 	void moveCamera();
 
 	void spawn(int zone);
+	int getNewSpanZone();
 	void soundsLoading();
 	void gameLogic(int level);
 
@@ -71,6 +72,7 @@ private:
 	cData Data;
 	bool isOverworld = true;
 	int w, h;
+	int currentZone;
 	zones respawnZones = {
 		{ //Zone forest
 			{  //Vertexs

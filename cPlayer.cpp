@@ -30,7 +30,7 @@ void cPlayer::Init()
 	Sword.SetFourHitboxes(21, 24, 26, 42, 2);
 	Sword.SetFourHitboxes(22, 25, 5, 21, 3);
 	low = false;
-	weaponIsSword = false;
+	weaponIsSword = true;
 
 	Boomerang.SetFrameDelay(8);
 	Boomerang.SetWidthHeight(46, 46);

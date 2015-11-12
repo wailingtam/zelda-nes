@@ -55,7 +55,8 @@ bool cGame::Init()
 
 	Player.Init();
 
-	spawn(0);
+	currentZone = 0;
+	spawn(currentZone);
 
 	return res;
 }
@@ -88,8 +89,6 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 bool cGame::Process()
 {
 	Sound.UpdateSound();
-	int oldx, oldy, newx, newy;
-	Player.GetPosition(&oldx, &oldy);
 	bool res = true;
 	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
 	int otherLevel = this->isOverworld ? INNERWORLD_LEVEL : OVERWORLD_LEVEL;
@@ -137,10 +136,11 @@ bool cGame::Process()
 		otherLevel = level;
 	}
 
-	Player.GetPosition(&newx, &newy);
-	//int zone = this->getNewSpanZone(oldx, oldy, newx, newy, this->isOverworld); Zone 4 es la única que no está en el overworld
-	int zone = -1;
-	if (zone != -1) this->spawn(zone);
+	int zone = getNewSpanZone(); //Zone 4 es la única que no está en el overworld
+	if (zone != currentZone && zone != -1) {
+		spawn(zone);
+		currentZone = zone;
+	}
 
 	//Game Logic
 	gameLogic(level);
@@ -215,7 +215,31 @@ void cGame::spawn(int zone) {
 		vWizzrobe.push_back(new cWizzrobe());
 		vWizzrobe[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);
 	}
-	//Aquamentus.Init(); ??
+	if (zone == 4) Aquamentus.Init();
+}
+
+int cGame::getNewSpanZone()
+{
+	int tx, ty;
+	Player.GetTile(&tx, &ty);
+	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
+	ty = Scene.GetMap(level)[0].size() - ty;
+	bool zoneFound = false;
+	int zone = -1;
+	int i = 0;
+	if (isOverworld) {
+		while (!zoneFound && i < respawnZones.size()-1) {
+			if (tx > respawnZones[i].vertexs[0].x && tx < respawnZones[i].vertexs[1].x
+				&& ty > respawnZones[i].vertexs[2].y && ty < respawnZones[i].vertexs[0].y) {
+				zoneFound = true;
+				zone = i;
+			}
+			++i;
+		}
+	}
+	else zone = 4;
+
+	return zone;
 }
 
 void cGame::soundsLoading() {

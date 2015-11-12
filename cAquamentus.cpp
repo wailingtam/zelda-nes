@@ -12,7 +12,7 @@ void cAquamentus::Init()
 {
 	SetFrameDelay(16);
 	SetWidthHeight(32, 32);
-	SetTile(30, 15);
+	SetTile(46, 30);
 	SetState(STATE_WALKLEFT);
 	SetStepLength(1);
 	SetLives(6.0);
