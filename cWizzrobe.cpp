@@ -21,41 +21,43 @@ cWizzrobe::~cWizzrobe(void)
 {
 }
 
-void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
+void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, bool underSpell)
 {
 	if (!GetWeaponHit()) Ray.SetHit(false);
 	if (!GetWeaponThrown()) Ray.SetThrown(false);
 
-	if (GetAppearanceTime() == 0) {
-		int sameRow = rand() % 2;
-		int wx, wy;
-		if (!sameRow) {
-			wx = px + TILE_SIZE;
-			wy = rand() % (25 * TILE_SIZE) + 1 * TILE_SIZE;
-			if (wy > py) SetState(STATE_LOOKDOWN);
-			else SetState(STATE_LOOKUP);
+	if (!underSpell) {
+		if (GetAppearanceTime() == 0) {
+			int sameRow = rand() % 2;
+			int wx, wy;
+			if (!sameRow) {
+				wx = px + TILE_SIZE;
+				wy = rand() % (25 * TILE_SIZE) + 1 * TILE_SIZE;
+				if (wy > py) SetState(STATE_LOOKDOWN);
+				else SetState(STATE_LOOKUP);
+			}
+			else {
+				wx = rand() % (31 * TILE_SIZE) + 2 * TILE_SIZE;
+				wy = py + TILE_SIZE;
+				if (wx > px) SetState(STATE_LOOKLEFT);
+				else SetState(STATE_LOOKRIGHT);
+			}
+			SetPosition(wx, wy);
+			++appearanceTime;
+			nextAppearanceTime = rand() % 100 + 40;
+			disappearanceTime = rand() % (nextAppearanceTime - 39) + 41;
+			disappeared = false;
 		}
-		else {
-			wx = rand() % (31 * TILE_SIZE) + 2 * TILE_SIZE;
-			wy = py + TILE_SIZE;
-			if (wx > px) SetState(STATE_LOOKLEFT);
-			else SetState(STATE_LOOKRIGHT);
-		}
-		SetPosition(wx, wy);
-		++appearanceTime;
-		nextAppearanceTime = rand() % 100 + 40;
-		disappearanceTime = rand() % (nextAppearanceTime - 39) + 41;
-		disappeared = false;
-	}
-	else if (GetAppearanceTime() == 10) SetWeaponThrown(true);
+		else if (GetAppearanceTime() == 10) SetWeaponThrown(true);
 
-	NextAppearance(nextAppearanceTime);
-	
-	if (appearanceTime > disappearanceTime 
-		|| appearanceTime < 10 && (appearanceTime%3) == 2 
-		|| appearanceTime == disappearanceTime - 2 || appearanceTime == disappearanceTime - 4 || appearanceTime == disappearanceTime - 6) 
-		disappeared = true;
-	else disappeared = false;
+		NextAppearance(nextAppearanceTime);
+
+		if (appearanceTime > disappearanceTime
+			|| appearanceTime < 10 && (appearanceTime % 3) == 2
+			|| appearanceTime == disappearanceTime - 2 || appearanceTime == disappearanceTime - 4 || appearanceTime == disappearanceTime - 6)
+			disappeared = true;
+		else disappeared = false;
+	}
 
 	if (GetWeaponThrown()) {
 		if (!Ray.GetThrown()) {

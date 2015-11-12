@@ -28,7 +28,7 @@ void cAquamentus::Init()
 	fireHitId = -1;
 }
 
-void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
+void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, bool underSpell)
 {
 	if (fireHitId != -1) {
 		if (!GetWeaponHit()) {
@@ -41,12 +41,13 @@ void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitb
 		fireHitId = -1;
 	}
 
-	if (steps == 0) {
-		steps = rand() % 25 + 5;
-		SetState(rand() % 2 + 4);
-	}
+	if (!underSpell) {
+		if (steps == 0) {
+			steps = rand() % 25 + 5;
+			SetState(rand() % 2 + 4);
+		}
 
-	switch (GetState()) {
+		switch (GetState()) {
 		case STATE_WALKLEFT:
 			MoveLeft(map);
 			break;
@@ -54,24 +55,25 @@ void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitb
 		case STATE_WALKRIGHT:
 			MoveRight(map);
 			break;
-	}
-
-	if (!GetWeaponThrown()) {
-		SetWeaponThrown(rand() % 250 == 0);
-		if (GetWeaponThrown()) {
-			for (int i = 0; i < 3; ++i) {
-				int px, py;
-				GetPosition(&px, &py);
-				Fire[i].SetPosition(px, py);
-				Fire[i].SetThrown(true);
-				Fire[i].SetState(STATE_WALKLEFT);
-				Fire[i].ResetDistance();
-			}
-			fireUnits = 3;
 		}
-	}
 
-	steps -= 1;
+		if (!GetWeaponThrown()) {
+			SetWeaponThrown(rand() % 250 == 0);
+			if (GetWeaponThrown()) {
+				for (int i = 0; i < 3; ++i) {
+					int px, py;
+					GetPosition(&px, &py);
+					Fire[i].SetPosition(px, py);
+					Fire[i].SetThrown(true);
+					Fire[i].SetState(STATE_WALKLEFT);
+					Fire[i].ResetDistance();
+				}
+				fireUnits = 3;
+			}
+		}
+
+		steps -= 1;
+	}
 
 	if (GetWeaponThrown()) {
 		for (int i = 0; i < 3; ++i) {

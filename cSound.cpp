@@ -96,6 +96,16 @@ void cSound::UpdateSound()
 	system->update();
 }
 
+bool cSound::GetChannel1Paused()
+{
+	return ch1Paused;
+}
+
+void cSound::SetChannel1Paused(bool p)
+{
+	ch1Paused = p;
+}
+
 bool cSound::GetChannel3Paused()
 {
 	return ch3Paused;

@@ -35,53 +35,42 @@ void cTektike::Jump(worldMatrix * map)
 	}
 }
 
-void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
+void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, bool underSpell)
 {
-	jump_delay++;
-	if (jump_delay == jump_freq) {
-		jump_delay = 0;
-		Jump(map);
-	}
-
-	float alfa;
-
-	if(jumping)
-	{
-		jump_alfa += JUMP_STEP;
-		
-		if(jump_alfa == jump_alfa_limit)
-		{
-			jumping = false;
-			//ty = jump_y;
-			//SetPosition(tx, ty);
+	if (!underSpell) {
+		jump_delay++;
+		if (jump_delay == jump_freq) {
+			jump_delay = 0;
+			Jump(map);
 		}
-		else
-		{
-			alfa = ((float)jump_alfa) * 0.017453f;
-			if (jump_up) ty = jump_y + (int)( ((float)JUMP_HEIGHT) * sin(alfa) );
-			else  ty = jump_y + (int)(((float)JUMP_HEIGHT) * cos(alfa)) - JUMP_HEIGHT;
-			if (jump_x_distance > 0) {
-				if (GetState() == STATE_WALKRIGHT) jump_x += GetStepLength();
-				else jump_x -= GetStepLength();
-				jump_x_distance -= GetStepLength();
-			}
-			tx = jump_x;
-			SetPosition(tx, ty);
 
-			/*if(jump_alfa > 90)
+		float alfa;
+
+		if (jumping)
+		{
+			jump_alfa += JUMP_STEP;
+
+			if (jump_alfa == jump_alfa_limit)
 			{
-				//Over floor?
-				jumping = !CollidesMapFloor(map);
-			}*/
+				jumping = false;
+				//ty = jump_y;
+				//SetPosition(tx, ty);
+			}
+			else
+			{
+				alfa = ((float)jump_alfa) * 0.017453f;
+				if (jump_up) ty = jump_y + (int)(((float)JUMP_HEIGHT) * sin(alfa));
+				else  ty = jump_y + (int)(((float)JUMP_HEIGHT) * cos(alfa)) - JUMP_HEIGHT;
+				if (jump_x_distance > 0) {
+					if (GetState() == STATE_WALKRIGHT) jump_x += GetStepLength();
+					else jump_x -= GetStepLength();
+					jump_x_distance -= GetStepLength();
+				}
+				tx = jump_x;
+				SetPosition(tx, ty);
+			}
 		}
 	}
-	/*else
-	{
-		//Over floor?
-		if(!CollidesMapFloor(map))
-			ty -= (2*GetStepLength());
-			SetPosition(tx, ty);
-	}*/
 	SetHit(Collides(playerHitbox));
 
 	if (swordThrown) {

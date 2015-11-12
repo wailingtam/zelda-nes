@@ -280,18 +280,6 @@ void cPlayer::SetBoomerangComingBack()
 	Boomerang.SetComingBack(true);
 }
 
-void cPlayer::countTime() {
-	unsigned int time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - this->initialTime >= countdown)
-		this->_canUseMagic = true;
-}
-
-void cPlayer::castSpell() {
-	if (this->_canUseMagic) {
-		this->initialTime = glutGet(GLUT_ELAPSED_TIME);
-	}
-}
-
 bool cPlayer::usingSword()
 {
 	return weaponIsSword;
@@ -299,13 +287,33 @@ bool cPlayer::usingSword()
 
 void cPlayer::SetUsingSword(bool s)
 {
-	weaponIsSword = s;
+	if (!GetWeaponThrown()) weaponIsSword = s;
+}
+
+void cPlayer::countTime() {
+	unsigned int time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - this->initialTime >= SPELL_RECHARGE_TIME)
+		this->_canUseMagic = true;
+	if (time - initialTime >= SPELL_DURATION)
+		spellActive = false;
+}
+
+void cPlayer::castSpell() {
+	if (this->_canUseMagic) {
+		this->initialTime = glutGet(GLUT_ELAPSED_TIME);
+		spellActive = true;
+		_canUseMagic = false;
+	}
 }
 
 bool cPlayer::canUseMagic() {
 	return this->_canUseMagic;
 }
 
+bool cPlayer::GetSpellActive()
+{
+	return spellActive;
+}
 
 bool cPlayer::teleport(worldMatrix *map, worldMatrix *otherMap, TeleportDirection tpdir){
 	cRect hb = GetCurrentHitbox();

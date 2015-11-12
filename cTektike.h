@@ -9,7 +9,7 @@ public:
 	~cTektike(void);
 
 	void Jump(worldMatrix *map);
-	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack);
+	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, bool underSpell);
 	void Draw(int tex_id);
 
 private:

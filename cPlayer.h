@@ -4,8 +4,8 @@
 #include "cWeapon.h"
 #include "cBoomerang.h"
 
-#define SPELL_RECHARGE_TIME 15000
-
+#define SPELL_RECHARGE_TIME 60000
+#define SPELL_DURATION		7000
 
 
 class cPlayer: public cBicho
@@ -19,7 +19,6 @@ public:
 	void Draw(int tex_id);
 	void Attack();
 	void Hurt();
-	void countTime();
 
 	bool GetAttacking();
 	bool GetThrowing();
@@ -29,10 +28,12 @@ public:
 	cRect GetBoomerangHitbox();
 	void SetBoomerangComingBack();
 
-	void castSpell();
 	bool usingSword();
 	void SetUsingSword(bool s);
+	void countTime();
+	void castSpell();
 	bool canUseMagic();
+	bool GetSpellActive();
 
 	enum TeleportDirection {
 		tpUp, tpDown, tpLeft, tpRight
@@ -59,6 +60,6 @@ private:
 	bool weaponIsSword;
 	
 	bool _canUseMagic = true;
-	unsigned int countdown = SPELL_RECHARGE_TIME;
 	unsigned int initialTime = glutGet(GLUT_ELAPSED_TIME);
+	bool spellActive = false;
 };

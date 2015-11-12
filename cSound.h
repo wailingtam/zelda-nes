@@ -27,6 +27,7 @@
 #define	LOW_HEALTH		5
 #define	DIE				6
 #define BOOMERANG		7
+#define SPELL			8
 #define OVERWORLD_BGM	10
 
 class cSound {
@@ -43,6 +44,8 @@ public:
 	void SetVolume(int channelgroup, float volume);
 	void ReleaseSound(int id);
 	void UpdateSound();
+	bool GetChannel1Paused();
+	void SetChannel1Paused(bool p);
 	bool GetChannel3Paused();
 	void SetChannel3Paused(bool p);
 
@@ -57,5 +60,6 @@ private:
 	FMOD::Channel *effectsChannel3;
 	float musicVolume;
 	float effectsVolume;
+	bool ch1Paused;
 	bool ch3Paused;
 };
