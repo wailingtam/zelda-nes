@@ -41,7 +41,7 @@ bool cGame::Init()
 
 	Data.loadImage(IMG_HEART, "resources/tileset/heart.png", GL_RGBA);
 	Data.loadImage(IMG_MINIMAP, "resources/minimap.png", GL_RGBA);
-	Data.loadImage(IMG_BOW, "resources/tileset/bow.png", GL_RGBA);
+	Data.loadImage(IMG_BOW, "resources/tileset/boomerang.png", GL_RGBA);
 	Data.loadImage(IMG_SWORD, "resources/tileset/sword.png", GL_RGBA);
 	Data.LoadImage(IMG_MAGIC, "resources/tileset/magic.png", GL_RGBA);
 
@@ -116,7 +116,10 @@ bool cGame::Process()
 	}
 	else Player.Stop();
 
-	if (keys[119]) Player.SetUsingSword(!Player.usingSword());		//key = w
+	if (keys[119] && (glutGet(GLUT_ELAPSED_TIME) - switchTime) > 500) {
+		Player.SetUsingSword(!Player.usingSword());		//key = w
+		this->switchTime = glutGet(GLUT_ELAPSED_TIME);
+	}
 	else if (keys[113] && Player.canUseMagic()) {					//key = q
 		Player.castSpell();
 		Sound.Play(SPELL, EFFECTS_CHANNEL1);
