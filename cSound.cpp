@@ -20,9 +20,10 @@ void cSound::Init() {
 	musicChannel1->setChannelGroup(musicChannelGroup);
 	effectsChannel1->setChannelGroup(effectsChannelGroup);
 	effectsChannel2->setChannelGroup(effectsChannelGroup);
+	effectsChannel3->setChannelGroup(effectsChannelGroup);
 	musicVolume = 0.5f;
 	effectsVolume = 0.5f;
-
+	ch3Paused = true;
 }
 
 void cSound::LoadSound(int id, const char* filename, int type) {
@@ -39,17 +40,18 @@ void cSound::Play(int id, int channel) {
 	if (channel == MUSIC_CHANNEL1) {
 		musicChannelGroup->setVolume(musicVolume);
 		system->playSound(sounds[id], musicChannelGroup, false, &musicChannel1);
-		//musicChannel->setPaused(false);
 	}
 	else if (channel == EFFECTS_CHANNEL1) {
 		effectsChannelGroup->setVolume(effectsVolume);
 		system->playSound(sounds[id], effectsChannelGroup, false, &effectsChannel1);
-		//effectsChannel->setPaused(false);
 	}
 	else if (channel == EFFECTS_CHANNEL2) {
 		effectsChannelGroup->setVolume(effectsVolume);
 		system->playSound(sounds[id], effectsChannelGroup, false, &effectsChannel2);
-		//effectsChannel->setPaused(false);
+	}
+	else if (channel == EFFECTS_CHANNEL3) {
+		effectsChannelGroup->setVolume(effectsVolume);
+		system->playSound(sounds[id], effectsChannelGroup, false, &effectsChannel3);
 	}
 }
 
@@ -69,6 +71,11 @@ void cSound::PauseChannel(int channel) {
 		effectsChannel2->getPaused(&isPaused);
 		effectsChannel2->setPaused(!isPaused);
 	}
+	else if (channel == EFFECTS_CHANNEL3) {
+		bool isPaused;
+		effectsChannel3->getPaused(&isPaused);
+		effectsChannel3->setPaused(!isPaused);
+	}
 }
 
 void cSound::SetVolume(int channelgroup, float volume) {
@@ -87,4 +94,14 @@ void cSound::ReleaseSound(int id) {
 void cSound::UpdateSound()
 {
 	system->update();
+}
+
+bool cSound::GetChannel3Paused()
+{
+	return ch3Paused;
+}
+
+void cSound::SetChannel3Paused(bool p)
+{
+	ch3Paused = p;
 }

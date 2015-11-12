@@ -19,7 +19,7 @@ cOctorok::~cOctorok(void)
 {
 }
 
-void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack)
+void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, int px, int py)
 {
 	if (!GetWeaponHit()) Rock.SetHit(false);
 	if (!GetWeaponThrown()) Rock.SetThrown(false);
@@ -48,13 +48,20 @@ void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 		default: if(!GetWeaponThrown()) SetWeaponThrown(rand() % 5 == 0);
 	}
 	
+	int x, y;
+	GetPosition(&x, &y);
+	int state = GetState();
+	if (!GetWeaponThrown()) {
+		if ((y == py && (state%4 == 0 && px > x) || (state%4 == 1 && px < x))
+			|| (x == px) && (state%4 == 2 && py > y) || (state%4 == 3 && py < y))
+			SetWeaponThrown(rand() % 2 == 0);
+	}
+
 	steps -= 1;
 
 	if (GetWeaponThrown()) {
 		if (!Rock.GetThrown()) {
-			int px, py;
-			GetPosition(&px, &py);
-			Rock.SetPosition(px, py);
+			Rock.SetPosition(x, y);
 			Rock.SetThrown(true);
 			Rock.SetState(GetState());
 			Rock.ResetDistance();

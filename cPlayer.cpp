@@ -30,39 +30,52 @@ void cPlayer::Init()
 	Sword.SetFourHitboxes(21, 24, 26, 42, 2);
 	Sword.SetFourHitboxes(22, 25, 5, 21, 3);
 	low = false;
+	weaponIsSword = false;
+
+	Boomerang.SetFrameDelay(8);
+	Boomerang.SetWidthHeight(46, 46);
+	Boomerang.SetThrown(false);
+	Boomerang.SetSpeed(4);
+	Boomerang.SetComingBack(false);
+	Boomerang.SetHitbox(17, 29, 17, 28);
 }
 
 void cPlayer::Logic(worldMatrix * map, cRect *playerHitbox)
 {
-	if (!GetWeaponThrown() && Sword.GetThrown()) Sword.SetThrown(false);
-
-	/*if (GetWeaponThrown()) {
-		if (!Sword.GetThrown()) {
-			int px, py;
-			GetPosition(&px, &py);
-			Sword.SetPosition(px, py);
-			Sword.SetState(GetState());
-			Sword.SetThrown(true);
-			Sword.ResetDistance();
-		}
-		Sword.Logic(map, playerHitbox);
-		if (!Sword.GetThrown()) SetWeaponThrown(false);
-	}
-	else Sword.SetThrown(false);*/
+	/*if (!GetWeaponThrown() && Sword.GetThrown() || Boomerang.GetThrown()) {
+		Sword.SetThrown(false);
+		Boomerang.SetThrown(false);
+	}*/
 
 	if (GetWeaponThrown()) {
 		int px, py;
 		GetPosition(&px, &py);
-		if (!Sword.GetThrown()) {
-			Sword.SetPosition(px, py);
-			Sword.SetState(GetState());
-			Sword.SetThrown(true);
+		if (weaponIsSword) {
+			if (!Sword.GetThrown()) {
+				Sword.SetPosition(px, py);
+				Sword.SetState(GetState());
+				Sword.SetThrown(true);
+				Sword.ResetDistance();
+			}
+			Sword.Logic(map, playerHitbox);
+			if (!Sword.GetThrown()) SetWeaponThrown(false);
 		}
-		Sword.SetObjective(px, py);
-		Sword.Logic(map, playerHitbox);
-		if (!Sword.GetThrown()) SetWeaponThrown(false);
+		else {
+			if (!Boomerang.GetThrown()) {
+				Boomerang.SetPosition(px, py);
+				Boomerang.SetState(GetState());
+				Boomerang.SetThrown(true);
+				Boomerang.ResetDistance();
+			}
+			Boomerang.SetObjective(px, py);
+			Boomerang.Logic(map, playerHitbox);
+			if (!Boomerang.GetThrown()) SetWeaponThrown(false);
+		}
 	}
-
+	else {
+		Sword.SetThrown(false);
+		Boomerang.SetThrown(false);
+	}
 }
 
 void cPlayer::Draw(int tex_id)
@@ -71,40 +84,60 @@ void cPlayer::Draw(int tex_id)
 
 	switch(GetState())
 	{
-		case STATE_LOOKLEFT:	if (attacking || throwing) {
+		case STATE_LOOKLEFT:	if (attacking || throwing && weaponIsSword) {
 									xo = 46.0f / 256.0f;		yo = 184.0f / 256.0f;
 									attacking = false;
 									throwing = false;
 								}
+								else if (throwing && !weaponIsSword) {
+									xo = 46.0f / 256.0f;		yo = 138.0f / 256.0f;
+									throwing = false;
+								}
 								else { xo = 46.0f / 256.0f;	yo = 46.0f / 256.0f; }
 								break;
-		case STATE_LOOKRIGHT:	if (attacking || throwing) {
+		case STATE_LOOKRIGHT:	if (attacking || throwing && weaponIsSword) {
 									xo = 138.0f / 256.0f;		yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 138.0f / 256.0f;		yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else { xo = 138.0f / 256.0f;	yo = 46.0f / 256.0f; }
 								break;
 
-		case STATE_LOOKUP:		if (attacking || throwing) {
+		case STATE_LOOKUP:		if (attacking || throwing && weaponIsSword) {
 									xo = 92.0f / 256.0f;		yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 92.0f / 256.0f;		yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else { xo = 92.0f / 256.0f;			yo = 46.0f / 256.0f; }
 								break;
 
-		case STATE_LOOKDOWN:	if (attacking || throwing) {
+		case STATE_LOOKDOWN:	if (attacking || throwing && weaponIsSword) {
 									xo = 0.0f;					yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 0.0f;					yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else { xo = 0.0f;				yo = 46.0f / 256.0f; }
 								break;
 
-		case STATE_WALKLEFT:	if (attacking || throwing) {
+		case STATE_WALKLEFT:	if (attacking || throwing && weaponIsSword) {
 									xo = 46.0f / 256.0f;		yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 46.0f / 256.0f;		yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else {
@@ -113,9 +146,13 @@ void cPlayer::Draw(int tex_id)
 								}
 								break;
 
-		case STATE_WALKRIGHT:	if (attacking || throwing) {
+		case STATE_WALKRIGHT:	if (attacking || throwing && weaponIsSword) {
 									xo = 138.0f / 256.0f;		yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 138.0f / 256.0f;		yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else {
@@ -124,9 +161,13 @@ void cPlayer::Draw(int tex_id)
 								}
 								break;
 
-		case STATE_WALKUP:		if (attacking || throwing) {
+		case STATE_WALKUP:		if (attacking || throwing && weaponIsSword) {
 									xo = 92.0f / 256.0f;		yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 92.0f / 256.0f;		yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else {
@@ -135,9 +176,13 @@ void cPlayer::Draw(int tex_id)
 								}
 								break;
 
-		case STATE_WALKDOWN:	if (attacking || throwing) {
+		case STATE_WALKDOWN:	if (attacking || throwing && weaponIsSword) {
 									xo = 0.0f;					yo = 184.0f / 256.0f;
 									attacking = false;
+									throwing = false;
+								}
+								else if (throwing && !weaponIsSword) {
+									xo = 0.0f;					yo = 138.0f / 256.0f;
 									throwing = false;
 								}
 								else {
@@ -161,15 +206,24 @@ void cPlayer::Draw(int tex_id)
 	if (!GetImmune()) DrawRect(tex_id, xo, yo, xf, yf);
 
 	if (Sword.GetThrown()) Sword.Draw(tex_id, LINK);
+	else if (Boomerang.GetThrown()) Boomerang.Draw(tex_id);
 }
 
-void cPlayer::Attack(worldMatrix *map) {
+void cPlayer::Attack() {
 
-	if (GetLives() == 3 && !GetWeaponThrown()) {
-		SetWeaponThrown(true);
-		throwing = true;
+	if (weaponIsSword) {
+		if (GetLives() == 3 && !GetWeaponThrown()) {
+			SetWeaponThrown(true);
+			throwing = true;
+		}
+		else attacking = true;
 	}
-	else attacking = true;
+	else {
+		if (!GetWeaponThrown()) {
+			SetWeaponThrown(true);
+			throwing = true;
+		}
+	}
 }
 
 void cPlayer::Hurt()
@@ -215,6 +269,17 @@ cRect cPlayer::GetSwordHitbox()
 	return shb;
 }
 
+cRect cPlayer::GetBoomerangHitbox()
+{
+	cRect bhb = Boomerang.GetCurrentHitbox();
+	return bhb;
+}
+
+void cPlayer::SetBoomerangComingBack()
+{
+	Boomerang.SetComingBack(true);
+}
+
 void cPlayer::countTime() {
 	unsigned int time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - this->initialTime >= countdown)
@@ -229,7 +294,12 @@ void cPlayer::castSpell() {
 
 bool cPlayer::usingSword()
 {
-	return false;
+	return weaponIsSword;
+}
+
+void cPlayer::SetUsingSword(bool s)
+{
+	weaponIsSword = s;
 }
 
 bool cPlayer::canUseMagic() {

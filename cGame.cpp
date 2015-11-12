@@ -103,13 +103,21 @@ bool cGame::Process()
 	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
 	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
 	else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
-	else if (keys[97]) {				//A = 97, S = 115
-		Player.Attack(Scene.GetMap(level));		
-		Sound.Play(SWORD, EFFECTS_CHANNEL1);
-		if (Player.GetThrowing())
-			Sound.Play(SWORD_SHOOT, EFFECTS_CHANNEL1);
+	else if (keys[97]) {				//A = 97
+		Player.Attack();		
+		if (Player.usingSword()) {
+			Sound.Play(SWORD, EFFECTS_CHANNEL1);
+			if (Player.GetThrowing())
+				Sound.Play(SWORD_SHOOT, EFFECTS_CHANNEL1);
+		}
+		else {
+			Sound.Play(BOOMERANG, EFFECTS_CHANNEL3);
+			Sound.SetChannel3Paused(false);
+		}
 	}
 	else Player.Stop();
+
+	if (keys[119] && !Player.GetWeaponThrown()) Player.SetUsingSword(!Player.usingSword());
 
 	if (oldLevel != this->isOverworld) {  //We change 'level' value accordingly
 		levelChanged = true;
@@ -210,6 +218,7 @@ void cGame::soundsLoading() {
 	Sound.LoadSound(KILL, "resources/audio/LOZ_Kill.wav", EFFECT);
 	Sound.LoadSound(LOW_HEALTH, "resources/audio/LOZ_LowHealth.wav", BACKGROUND);
 	Sound.LoadSound(DIE, "resources/audio/LOZ_Dead.ogg", EFFECT);
+	Sound.LoadSound(BOOMERANG, "resources/audio/LOZ_Boomerang.wav", BACKGROUND);
 }
 
 void cGame::gameLogic(int level) {
@@ -228,18 +237,23 @@ void cGame::gameLogic(int level) {
 		Player.SetLives(-1.0);
 	}
 	pchb = Player.GetCurrentHitbox();
-	cRect shb = Player.GetSwordHitbox();
+	cRect whb;
+	if (Player.usingSword()) whb = Player.GetSwordHitbox();
+	else whb = Player.GetBoomerangHitbox();
 	bool directAttack = Player.GetAttacking();
 	cRect dshb;
 	if (directAttack) dshb = Player.GetHitboxByPosition(Player.GetState());
-	bool swordThrown = Player.GetWeaponThrown();
-
+	bool playersWeaponThrown = Player.GetWeaponThrown();
+	if (!Player.usingSword() && !Player.GetWeaponThrown() && !Sound.GetChannel3Paused()) {
+		Sound.PauseChannel(EFFECTS_CHANNEL3);
+		Sound.SetChannel3Paused(true);
+	}
 	int px, py;
 	Player.GetPosition(&px, &py);
 
 	for (int i = 0; i < vOctorok.size(); i++) {
 		if (vOctorok[i]->GetAlive()) {
-			vOctorok[i]->Logic(Scene.GetMap(level), &pchb, &shb, &dshb, swordThrown, directAttack);
+			vOctorok[i]->Logic(Scene.GetMap(level), &pchb, &whb, &dshb, playersWeaponThrown, directAttack, px, py);
 			if (vOctorok[i]->GetWeaponHit() || vOctorok[i]->GetHit()) {
 				if (!Player.GetImmune()) {
 					Player.Hurt();
@@ -251,7 +265,8 @@ void cGame::gameLogic(int level) {
 			}
 			if (vOctorok[i]->GetHurt()) {
 				Sound.Play(KILL, EFFECTS_CHANNEL1);
-				Player.SetWeaponThrown(false);
+				if (Player.usingSword()) Player.SetWeaponThrown(false);
+				else Player.SetBoomerangComingBack();
 				vOctorok[i]->SetHurt(false);
 			}
 		}
@@ -259,7 +274,7 @@ void cGame::gameLogic(int level) {
 
 	for (int i = 0; i < vTektike.size(); i++) {
 		if (vTektike[i]->GetAlive()) {
-			vTektike[i]->Logic(Scene.GetMap(level), &pchb, &shb, &dshb, swordThrown, directAttack);
+			vTektike[i]->Logic(Scene.GetMap(level), &pchb, &whb, &dshb, playersWeaponThrown, directAttack);
 			if (vTektike[i]->GetHit()) {
 				if (!Player.GetImmune()) {
 					Player.Hurt();
@@ -269,7 +284,8 @@ void cGame::gameLogic(int level) {
 			}
 			if (vTektike[i]->GetHurt()) {
 				Sound.Play(KILL, EFFECTS_CHANNEL1);
-				Player.SetWeaponThrown(false);
+				if (Player.usingSword()) Player.SetWeaponThrown(false);
+				else Player.SetBoomerangComingBack();
 				vTektike[i]->SetHurt(false);
 			}
 		}
@@ -277,7 +293,7 @@ void cGame::gameLogic(int level) {
 
 	for (int i = 0; i < vWizzrobe.size(); i++) {
 		if (vWizzrobe[i]->GetAlive()) {
-			vWizzrobe[i]->Logic(Scene.GetMap(level), px, py, &pchb, &shb, &dshb, swordThrown, directAttack);
+			vWizzrobe[i]->Logic(Scene.GetMap(level), px, py, &pchb, &whb, &dshb, playersWeaponThrown, directAttack);
 			if (vWizzrobe[i]->GetWeaponHit() || vWizzrobe[i]->GetHit()) {
 				if (!Player.GetImmune()) {
 					Player.Hurt();
@@ -289,14 +305,15 @@ void cGame::gameLogic(int level) {
 			}
 			if (vWizzrobe[i]->GetHurt()) {
 				Sound.Play(KILL, EFFECTS_CHANNEL1);
-				Player.SetWeaponThrown(false);
+				if (Player.usingSword()) Player.SetWeaponThrown(false);
+				else Player.SetBoomerangComingBack();
 				vWizzrobe[i]->SetHurt(false);
 			}
 		}
 	}
 
 	if (Aquamentus.GetAlive()) {
-		Aquamentus.Logic(Scene.GetMap(level), &pchb, &shb, &dshb, swordThrown, directAttack);
+		Aquamentus.Logic(Scene.GetMap(level), &pchb, &whb, &dshb, playersWeaponThrown, directAttack);
 		if (Aquamentus.GetWeaponHit() || Aquamentus.GetHit()) {
 			if (!Player.GetImmune()) {
 				Player.Hurt();
@@ -308,7 +325,8 @@ void cGame::gameLogic(int level) {
 		if (Aquamentus.GetHurt()) {
 			if (!Aquamentus.GetAlive()) Sound.Play(KILL, EFFECTS_CHANNEL1);
 			else Sound.Play(HIT, EFFECTS_CHANNEL1);
-			Player.SetWeaponThrown(false);
+			if (Player.usingSword()) Player.SetWeaponThrown(false);
+			else Player.SetBoomerangComingBack();
 			Aquamentus.SetHurt(false);
 		}
 	}

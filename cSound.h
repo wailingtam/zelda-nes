@@ -17,6 +17,7 @@
 #define MUSIC_CHANNEL1		0
 #define EFFECTS_CHANNEL1	1
 #define EFFECTS_CHANNEL2	2
+#define EFFECTS_CHANNEL3	3
 
 #define SWORD			0
 #define SWORD_SHOOT		1
@@ -25,6 +26,7 @@
 #define	KILL			4
 #define	LOW_HEALTH		5
 #define	DIE				6
+#define BOOMERANG		7
 #define OVERWORLD_BGM	10
 
 class cSound {
@@ -41,6 +43,8 @@ public:
 	void SetVolume(int channelgroup, float volume);
 	void ReleaseSound(int id);
 	void UpdateSound();
+	bool GetChannel3Paused();
+	void SetChannel3Paused(bool p);
 
 private:
 	FMOD::System *system;
@@ -50,6 +54,8 @@ private:
 	FMOD::Channel *musicChannel1;
 	FMOD::Channel *effectsChannel1;
 	FMOD::Channel *effectsChannel2;
+	FMOD::Channel *effectsChannel3;
 	float musicVolume;
 	float effectsVolume;
+	bool ch3Paused;
 };

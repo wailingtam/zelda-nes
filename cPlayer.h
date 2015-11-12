@@ -17,7 +17,7 @@ public:
 	void Init();
 	void Logic(worldMatrix *map, cRect *playerHitbox);
 	void Draw(int tex_id);
-	void Attack(worldMatrix *map);
+	void Attack();
 	void Hurt();
 	void countTime();
 
@@ -25,9 +25,13 @@ public:
 	bool GetThrowing();
 	bool GetLow();
 	void SetLow(bool l);
-	void castSpell();
+	cRect GetSwordHitbox();
+	cRect GetBoomerangHitbox();
+	void SetBoomerangComingBack();
 
+	void castSpell();
 	bool usingSword();
+	void SetUsingSword(bool s);
 	bool canUseMagic();
 
 	enum TeleportDirection {
@@ -45,14 +49,14 @@ public:
 
 	void MoveDown(worldMatrix * map, worldMatrix * otherMap, bool * isOverworld);
 
-	cRect GetSwordHitbox();
 
 private:
-	cBoomerang Sword;
+	cWeapon Sword;
 	cBoomerang Boomerang;
 	bool attacking;
 	bool throwing;
-	bool low; 
+	bool low;
+	bool weaponIsSword;
 	
 	bool _canUseMagic = true;
 	unsigned int countdown = SPELL_RECHARGE_TIME;

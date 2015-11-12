@@ -9,7 +9,7 @@ public:
 	cOctorok(void);
 	~cOctorok(void);
 
-	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack);
+	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, int px, int py);
 	void Draw(int tex_id);
 
 private:

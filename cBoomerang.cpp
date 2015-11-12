@@ -15,6 +15,16 @@ void cBoomerang::SetObjective(int ox, int oy)
 	obj_y = oy;
 }
 
+void cBoomerang::SetComingBack(bool cb)
+{
+	comingBack = cb;
+}
+
+bool cBoomerang::GetComingBack()
+{
+	return comingBack;
+}
+
 void cBoomerang::Logic(worldMatrix *map, cRect *playerHitbox)
 {
 	int x, y;
@@ -22,7 +32,7 @@ void cBoomerang::Logic(worldMatrix *map, cRect *playerHitbox)
 	bool thrown = GetThrown();
 	int speed = GetSpeed();
 	if (thrown) {
-		if (distance < 200) {
+		if (distance < 200 && !comingBack) {
 			switch (GetState()) {
 			case STATE_LOOKLEFT:
 			case STATE_WALKLEFT:	x -= speed;
@@ -42,17 +52,24 @@ void cBoomerang::Logic(worldMatrix *map, cRect *playerHitbox)
 				break;
 			}
 			distance += speed;
-			if (distance > 200) thrown = false;
+			if (distance >= 200) comingBack = true;
 		}
-		else {
+		else if (comingBack) {
 			float vx = obj_x - x;
 			float vy = obj_y - y;
-			float mod = sqrt(pow(vx, 2) + pow(vy,2));
-			vx = vx*speed / mod;
-			vy = vy*speed / mod;
-			x = x + floor(vx + 0.5);
-			y = y + floor(vy + 0.5);
-			SetPosition(x, y);
+			if (abs(vx) <= speed && abs(vy) <= speed) {
+				SetThrown(false);
+				comingBack = false;
+				x = obj_x;
+				y = obj_y;
+			}
+			else {
+				float mod = sqrt(pow(vx, 2) + pow(vy, 2));
+				vx = vx*speed / mod;
+				vy = vy*speed / mod;
+				x = x + floor(vx + 0.5);
+				y = y + floor(vy + 0.5);
+			}
 		}
 	}
 	SetPosition(x, y);
@@ -60,34 +77,14 @@ void cBoomerang::Logic(worldMatrix *map, cRect *playerHitbox)
 	SetHit(Collides(playerHitbox));
 }
 
-void cBoomerang::Draw(int tex_id, int enemy)
+void cBoomerang::Draw(int tex_id)
 {
 	float xo, yo, xf, yf;
 
-	if (tex_id == IMG_PLAYER) {
-		switch (GetState()) {
-		case STATE_LOOKLEFT:
-		case STATE_WALKLEFT:
-			xo = 46.0f / 256.0f;
-			break;
-		case STATE_LOOKRIGHT:
-		case STATE_WALKRIGHT:
-			xo = 138.0f / 256.0f;
-			break;
-		case STATE_LOOKUP:
-		case STATE_WALKUP:
-			xo = 92.0f / 256.0f;
-			break;
-		case STATE_LOOKDOWN:
-		case STATE_WALKDOWN:
-			xo = 0.0f;
-			break;
-		}
-
-		yo = 230.0f / 256.0f;
-		xf = xo + 46.0f / 256.0f;
-		yf = yo - 46.0f / 256.0f;
-	}
-
+	xo = 184.0f / 256.0f;
+	yo = (GetFrame() + 1) * 46.0f / 256.0f;
+	xf = xo + 46.0f / 256.0f;
+	yf = yo - 46.0f / 256.0f;
+	NextFrame(4);
 	DrawRect(tex_id, xo, yo, xf, yf);
 }
