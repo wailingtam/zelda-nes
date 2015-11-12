@@ -93,6 +93,8 @@ public:
 	cRect Hitbox;
 	cRect vHitbox[4];
 
+	bool useVHbox = false;
+
 private:
 	int x, y;
 	int w, h;

@@ -201,6 +201,9 @@ void cGame::spawn(int zone) {
 	respawnOfBichos *res = &this->respawnZones[zone].respawn;
 	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
 	int i = 0;
+	vOctorok.clear();
+	vTektike.clear();
+	vWizzrobe.clear();
 	for (position pos : res->octorocks) {
 		vOctorok.push_back(new cOctorok());
 		vOctorok[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);

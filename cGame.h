@@ -14,7 +14,7 @@
 
 #define GAME_WIDTH	800
 #define GAME_HEIGHT 600
-#define ZOOM_FACTOR 1
+#define ZOOM_FACTOR 8
 
 struct respawnOfBichos{
 	std::vector<position> octorocks, tektikes, wizzrobes;

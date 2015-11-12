@@ -111,6 +111,8 @@ bool cBicho::CollidesMapLimits(worldMatrix *map) {
 
 bool cBicho::isBlocking(worldMatrix *map){
 	cRect hb = GetCurrentHitbox();
+	if (this->useVHbox) hb = GetHitboxByPosition(state);
+	
 	int y1 = map->size() - 1 - hb.bottom / TILE_SIZE;	//Vectors are size - 1!
 	int y2 = map->size() - 1 - (hb.bottom - 1) / TILE_SIZE;
 	return (*map)[y1][hb.left / TILE_SIZE].blocking && !(*map)[y1][hb.left / TILE_SIZE].changeLevel

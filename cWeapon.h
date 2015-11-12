@@ -14,6 +14,7 @@ public:
 	void SetSpeed(int s);
 	int GetSpeed();
 	void ResetDistance();
+	cRect GetCurrentHitbox();
 	void Logic(worldMatrix *map, cRect *playerHitbox);
 	void Draw(int tex_id, int enemy);
 

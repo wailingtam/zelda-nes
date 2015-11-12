@@ -4,6 +4,7 @@ cWeapon::cWeapon(void)
 {
 }
 
+
 cWeapon::~cWeapon(void)
 {
 }
@@ -28,9 +29,16 @@ int cWeapon::GetSpeed()
 	return speed;
 }
 
-void cWeapon::ResetDistance()
-{
+void cWeapon::ResetDistance(){
 	distance = 0;
+}
+
+
+cRect cWeapon::GetCurrentHitbox(){
+	if (this->useVHbox) {
+		return GetHitboxByPosition(GetState());
+	}
+	else return cBicho::GetCurrentHitbox();
 }
 
 void cWeapon::Logic(worldMatrix *map, cRect *playerHitbox)
