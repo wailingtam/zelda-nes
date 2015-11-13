@@ -111,6 +111,7 @@ void cWizzrobe::Draw(int tex_id)
 			NextFrame(2);
 			break;
 
+		default:
 		case STATE_LOOKUP:
 			xo = 64.0f / 128.0f + (GetFrame()*16.0f / 128.0f);	yo = 64.0f / 128.0f;
 			NextFrame(2);

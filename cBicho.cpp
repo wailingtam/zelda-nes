@@ -83,6 +83,7 @@ bool cBicho::Collides(cRect *rc)
 bool cBicho::CollidesMapLimits(worldMatrix *map) {
 	
 	//if (isBlocking(map)) return true;
+	int q;
 
 	cRect hb = GetCurrentHitbox();
 	if (this->useVHbox) hb = GetHitboxByPosition(state);
@@ -96,7 +97,10 @@ bool cBicho::CollidesMapLimits(worldMatrix *map) {
 		break;
 	case (STATE_LOOKRIGHT) :
 	case (STATE_WALKRIGHT) :
-		if (hb.right > 1600) out = true;
+		q = (*map)[0].size() * TILE_SIZE;
+		if (hb.right >= (q)) {
+			out = true;
+		}
 		break;
 	case (STATE_LOOKDOWN) :
 	case (STATE_WALKDOWN) :
@@ -104,7 +108,7 @@ bool cBicho::CollidesMapLimits(worldMatrix *map) {
 		break;
 	case (STATE_LOOKUP) :
 	case(STATE_WALKUP) :
-		if (hb.top > 1120) out = true;
+		if (hb.top >= (map->size() * TILE_SIZE)) out = true;
 	}
 
 	return out;
