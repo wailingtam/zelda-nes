@@ -117,10 +117,17 @@ bool cBicho::isBlocking(worldMatrix *map){
 	
 	int y1 = map->size() - 1 - hb.bottom / TILE_SIZE;	//Vectors are size - 1!
 	int y2 = map->size() - 1 - (hb.bottom - 1) / TILE_SIZE;
-	return (*map)[y1][hb.left / TILE_SIZE].blocking && !(*map)[y1][hb.left / TILE_SIZE].changeLevel
-		|| (*map)[y1][hb.right / TILE_SIZE].blocking && !(*map)[y1][hb.right / TILE_SIZE].changeLevel
-		|| (*map)[y2][hb.left / TILE_SIZE].blocking && !(*map)[y2][hb.left / TILE_SIZE].changeLevel
-		|| (*map)[y2][hb.right / TILE_SIZE].blocking && !(*map)[y2][hb.right / TILE_SIZE].changeLevel;
+	int xLeft = hb.left / TILE_SIZE;
+	int xRight = hb.right / TILE_SIZE;
+	bool b1 = (*map)[y1][xLeft].blocking && !(*map)[y1][xLeft].changeLevel;
+	bool b2 = (*map)[y1][xRight].blocking && !(*map)[y1][xRight].changeLevel;
+	bool b3 = (*map)[y2][xLeft].blocking && !(*map)[y2][xLeft].changeLevel;
+		bool b4 = (*map)[y2][xRight].blocking && !(*map)[y2][xRight].changeLevel;
+		/*return (*map)[y1][xLeft].blocking && !(*map)[y1][xLeft].changeLevel
+			|| (*map)[y1][xRight].blocking && !(*map)[y1][xRight].changeLevel
+			|| (*map)[y2][xLeft].blocking && !(*map)[y2][xLeft].changeLevel
+			|| (*map)[y2][xRight].blocking && !(*map)[y2][xRight].changeLevel;*/
+		return b1 || b2 || b3 || b4;
 }
 
 void cBicho::GetArea(cRect *rc)

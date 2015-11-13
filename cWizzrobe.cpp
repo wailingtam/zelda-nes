@@ -27,28 +27,35 @@ void cWizzrobe::Logic(worldMatrix * map, int px, int py, cRect *playerHitbox, cR
 	if (!GetWeaponThrown()) Ray.SetThrown(false);
 
 	if (!underSpell) {
-		if (GetAppearanceTime() == 0) {
-			int sameRow = rand() % 2;
-			int wx, wy;
-			if (!sameRow) {
-				wx = px + TILE_SIZE;
-				wy = rand() % (10 * TILE_SIZE) + 1 * TILE_SIZE;
-				if (wy > py) SetState(STATE_LOOKDOWN);
-				else SetState(STATE_LOOKUP);
-			}
-			else {
-				wx = rand() % (10 * TILE_SIZE) + 2 * TILE_SIZE;
-				wy = py + TILE_SIZE;
-				if (wx > px) SetState(STATE_LOOKLEFT);
-				else SetState(STATE_LOOKRIGHT);
-			}
-			SetPosition(wx, wy);
-			++appearanceTime;
-			nextAppearanceTime = rand() % 100 + 40;
+		if (nextAppearanceTime - appearanceTime <= 0) {
+			
+			int wx, wy, posx, posy;
+			do {
+				int sameRow = rand() % 2;
+				GetPosition(&posx, &posy);
+				if (sameRow == 0) {
+					wx = px + TILE_SIZE;
+					wy = (rand() % 5) * TILE_SIZE + 1 * TILE_SIZE;
+					wy = (rand() % 2 == 0)? py + wy : py - wy;
+					if (wy > py) SetState(STATE_LOOKDOWN);
+					else SetState(STATE_LOOKUP);
+				}
+				else {
+					wx = (rand() % 5) * TILE_SIZE + 2 * TILE_SIZE;
+					wx = (rand() % 2 == 0)? px + wx : px - wx;
+					wy = py + TILE_SIZE;
+					if (wx > px) SetState(STATE_LOOKLEFT);
+					else SetState(STATE_LOOKRIGHT);
+				}				
+				SetPosition(wx, wy);
+			} while (CollidesMapLimits(map) || isBlocking(map));
+			appearanceTime = 0;
+			nextAppearanceTime = rand() % 4000 + 40;
 			disappearanceTime = rand() % (nextAppearanceTime - 39) + 41;
 			disappeared = false;
 		}
 		else if (GetAppearanceTime() == 10) SetWeaponThrown(true);
+		++appearanceTime;
 
 		NextAppearance(nextAppearanceTime);
 

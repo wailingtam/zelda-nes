@@ -41,7 +41,7 @@ void cAquamentus::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitb
 	}
 
 	if (!underSpell) {
-		if (steps == 0) {
+		if (steps <= 0) {
 			steps = rand() % 25 + 5;
 			SetState(rand() % 2 + 4);
 		}

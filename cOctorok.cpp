@@ -31,8 +31,8 @@ void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 	if (!GetWeaponThrown()) Rock.SetThrown(false);
 
 	if (!underSpell) {
-		if (steps == 0) {
-			steps = rand() % 100;
+		if (steps <= 0) {
+			steps = rand() % 50;
 			SetState(rand() % 8);
 		}
 		switch (GetState()) {
@@ -61,7 +61,7 @@ void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 		if (!GetWeaponThrown()) {
 			if ((y == py && (state % 4 == 0 && px > x) || (state % 4 == 1 && px < x))
 				|| (x == px) && (state % 4 == 2 && py > y) || (state % 4 == 3 && py < y))
-				SetWeaponThrown(rand() % 2 == 0);
+				SetWeaponThrown(true);
 		}
 
 		steps -= 1;

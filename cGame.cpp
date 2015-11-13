@@ -86,8 +86,7 @@ void cGame::ReadMouse(int button, int state, int x, int y)
 }
 
 //Process
-bool cGame::Process()
-{
+bool cGame::Process(){
 	Sound.UpdateSound();
 	bool res = true;
 	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
@@ -96,61 +95,62 @@ bool cGame::Process()
 	bool levelChanged = false;
 	//Process Input
 	if (keys[27])	res = false;
-	
-	if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
-	else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
-	else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
-	else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
-	else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
-	else if (keys[97]) {				//key = a
-		Player.Attack();		
-		if (Player.usingSword()) {
-			Sound.Play(SWORD, EFFECTS_CHANNEL1);
-			if (Player.GetThrowing())
-				Sound.Play(SWORD_SHOOT, EFFECTS_CHANNEL1);
+	if (Player.GetAlive()) {
+		if (keys[GLUT_KEY_UP])			Player.MoveUp(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+		else if (keys[GLUT_KEY_DOWN])	Player.MoveDown(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+		else if (keys[GLUT_KEY_LEFT])	Player.MoveLeft(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+		else if (keys[GLUT_KEY_RIGHT])	Player.MoveRight(Scene.GetMap(level), Scene.GetMap(otherLevel), &this->isOverworld);
+		else if (keys[GLUT_KEY_F1]) this->isOverworld = !this->isOverworld;
+		else if (keys[97]) {				//key = a
+			Player.Attack();
+			if (Player.usingSword()) {
+				Sound.Play(SWORD, EFFECTS_CHANNEL1);
+				if (Player.GetThrowing())
+					Sound.Play(SWORD_SHOOT, EFFECTS_CHANNEL1);
+			}
+			else {
+				Sound.Play(BOOMERANG, EFFECTS_CHANNEL3);
+				Sound.SetChannel3Paused(false);
+			}
 		}
-		else {
-			Sound.Play(BOOMERANG, EFFECTS_CHANNEL3);
-			Sound.SetChannel3Paused(false);
+		else Player.Stop();
+
+		if (keys[119] && (glutGet(GLUT_ELAPSED_TIME) - switchTime) > 500) {
+			Player.SetUsingSword(!Player.usingSword());		//key = w
+			this->switchTime = glutGet(GLUT_ELAPSED_TIME);
 		}
-	}
-	else Player.Stop();
+		else if (keys[113] && Player.canUseMagic()) {					//key = q
+			Player.castSpell();
+			Sound.Play(SPELL, EFFECTS_CHANNEL1);
+			Sound.PauseChannel(MUSIC_CHANNEL1);
+			Sound.SetChannel1Paused(true);
+		}
 
-	if (keys[119] && (glutGet(GLUT_ELAPSED_TIME) - switchTime) > 500) {
-		Player.SetUsingSword(!Player.usingSword());		//key = w
-		this->switchTime = glutGet(GLUT_ELAPSED_TIME);
-	}
-	else if (keys[113] && Player.canUseMagic()) {					//key = q
-		Player.castSpell();
-		Sound.Play(SPELL, EFFECTS_CHANNEL1);
-		Sound.PauseChannel(MUSIC_CHANNEL1);
-		Sound.SetChannel1Paused(true);
-	}
+		if (!Player.GetSpellActive() && Sound.GetChannel1Paused()) {
+			Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
+			Sound.SetChannel1Paused(false);
+		}
 
-	if (!Player.GetSpellActive() && Sound.GetChannel1Paused()) {
-		Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
-		Sound.SetChannel1Paused(false);
-	}
+		if (oldLevel != this->isOverworld) {  //We change 'level' value accordingly
+			levelChanged = true;
+			int aux = level;
+			level = otherLevel;
+			otherLevel = level;
+			Sound.PauseChannel(MUSIC_CHANNEL1);
+			if (level == INNERWORLD_LEVEL) Sound.Play(UNDERWORLD_BGM, MUSIC_CHANNEL1);
+			else Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
+		}
 
-	if (oldLevel != this->isOverworld) {  //We change 'level' value accordingly
-		levelChanged = true;
-		int aux = level;
-		level = otherLevel;
-		otherLevel = level;
-		Sound.PauseChannel(MUSIC_CHANNEL1);
-		if (level == INNERWORLD_LEVEL) Sound.Play(UNDERWORLD_BGM, MUSIC_CHANNEL1);
-		else Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
-	}
-	
-	int zone = getNewSpanZone(); //Zone 4 es la única que no está en el overworld
-	if (zone != currentZone && zone != -1) {
-		spawn(zone);
-		currentZone = zone;
-	}
+		int zone = getNewSpanZone(); //Zone 4 es la única que no está en el overworld
+		if (zone != currentZone && zone != -1) {
+			spawn(zone);
+			currentZone = zone;
+		}
 
-	//Game Logic
+		//Game Logic
+		
+	}
 	gameLogic(level);
-
 	return res;
 }
 
@@ -287,18 +287,22 @@ void cGame::gameLogic(int level) {
 		Sound.Play(LOW_HEALTH, EFFECTS_CHANNEL2);
 		Player.SetLow(true);
 	}
-	else if (Player.GetLives() > 1.0 && Player.GetLow() || Player.GetLives() == 0) {
+	else if (Player.GetLives() <= 0) {
 		Sound.PauseChannel(EFFECTS_CHANNEL2);
 		Player.SetLow(false);
 	}
 	if (!Player.GetAlive()) {
 		if (!gameOver) {
+			Sound.PauseChannel(EFFECTS_CHANNEL2);
 			Sound.PauseChannel(MUSIC_CHANNEL1);
 			Sound.Play(DIE, EFFECTS_CHANNEL1);
 			this->switchTime = glutGet(GLUT_ELAPSED_TIME);
 			gameOver = true;
 		}
-		if (gameOver && glutGet(GLUT_ELAPSED_TIME) - switchTime > 10000) {
+		if (gameOver && glutGet(GLUT_ELAPSED_TIME) - switchTime > 3000) {
+			this->isOverworld = true;
+			this->currentZone = 0;
+			spawn(currentZone);
 			Sound.Init();
 			soundsLoading();
 			Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
