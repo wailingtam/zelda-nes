@@ -15,7 +15,7 @@
 
 #define GAME_WIDTH	800
 #define GAME_HEIGHT 600
-#define ZOOM_FACTOR 1
+#define ZOOM_FACTOR 8
 
 struct respawnOfBichos{
 	std::vector<position> octorocks, tektikes, wizzrobes;
@@ -88,11 +88,11 @@ private:
 	zones respawnZones = {
 		{ //Zone forest
 			{  //Vertexs
-				{8,67}, {55,67}, {54,42}, {8,42}
+				{8,67}, {55,67}, {54,44}, {8,44}
 			},
 			{	//Respawn
-				{ { 27, 61 },{ 34, 63 },{ 38, 58 },{ 46, 55 },{45,47} }, //Octoroks
-				{ {46, 62}, {32, 48} , {42,59}, {26,51}}, //Tektikes
+				{ { 27, 61 },{ 34, 63 },{ 38, 58 },{ 46, 55 },{ 45,47 },{ 52,55 },{ 23,51 } }, //Octoroks
+				{ {46, 62}, {32, 48} , {42,59}, {26,51},{ 11,60 },{ 31,61 } }, //Tektikes
 				{  }, //Wizzrobes
 			},
 		//	true
@@ -100,10 +100,10 @@ private:
 		},
 		{ //Zone village
 			{  //Vertexs
-				{ 11,42 },{ 63,42 },{ 63,20 },{ 11,20 }
+				{ 11,43 },{ 63,43 },{ 63,24 },{ 11,24 }
 			},
 			{	//Respawn
-				{ { 31, 38 }, {32, 32}, {44,36}, {51,31},{ 32,21 } }, //Octoroks
+				{ { 31, 38 }, {32, 32}, {44,36}, {51,31},{ 32,21 },{ 40,41 } }, //Octoroks
 				{ {36,24}, {38,30}, {59,34} }, //Tektikes
 				{ {50,39} }, //Wizzrobes
 			},
@@ -112,7 +112,7 @@ private:
 		},
 		{ //Zone cementery
 			{  //Vertexs
-				{ 37,21 },{ 61,21 },{ 61,10 },{ 37,10 }
+				{ 37,23 },{ 61,23 },{ 61,10 },{ 37,10 }
 			},
 			{	//Respawn
 				{ { 48, 14 },{ 45, 14 },{ 46, 14 } }, //Octoroks
@@ -124,7 +124,7 @@ private:
 		},
 		{ //Zone castle
 			{  //Vertexs
-				{ 75,39 },{ 96,39 },{ 96,23 },{ 75,23 }
+				{ 75,45 },{ 96,45 },{ 96,20 },{ 75,20 }
 			},
 			{	//Respawn
 				{ { 80, 35 } }, //Octoroks
@@ -135,7 +135,7 @@ private:
 		},
 		{ //Zone inner castle
 			{  //Vertexs
-				{ 41,49 },{ 75,49 },{ 75,19 },{ 41,19 }
+				{ 41,52 },{ 75,52 },{ 75,15 },{ 41,15 }
 			},
 			{	//Respawn
 				{ { 44, 35 },{ 50, 36 },{ 60, 30 } }, //Octoroks

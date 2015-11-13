@@ -242,17 +242,17 @@ void cGame::spawn(int zone) {
 
 int cGame::getNewSpanZone()
 {
-	int tx, ty;
-	Player.GetTile(&tx, &ty);
+	int tx, tty;
+	Player.GetTile(&tx, &tty);
 	int level = this->isOverworld ? OVERWORLD_LEVEL : INNERWORLD_LEVEL;
-	ty = Scene.GetMap(level)[0].size() - ty;
+	int ty = Scene.GetMap(level)->size() - 1 - tty;
 	bool zoneFound = false;
 	int zone = -1;
 	int i = 0;
 	if (isOverworld) {
 		while (!zoneFound && i < respawnZones.size()-1) {
-			if (tx > respawnZones[i].vertexs[0].x && tx < respawnZones[i].vertexs[1].x
-				&& ty > respawnZones[i].vertexs[2].y && ty < respawnZones[i].vertexs[0].y) {
+			if (tx >= respawnZones[i].vertexs[0].x && tx <= respawnZones[i].vertexs[1].x
+				&& ty >= respawnZones[i].vertexs[2].y && ty <= respawnZones[i].vertexs[0].y) {
 				zoneFound = true;
 				zone = i;
 			}

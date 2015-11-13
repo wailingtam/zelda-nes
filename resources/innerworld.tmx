@@ -1441,6 +1441,21 @@
     <property name="blocking" value="1"/>
    </properties>
   </tile>
+  <tile id="601">
+   <properties>
+    <property name="blocking" value="1"/>
+   </properties>
+  </tile>
+  <tile id="602">
+   <properties>
+    <property name="blocking" value="1"/>
+   </properties>
+  </tile>
+  <tile id="603">
+   <properties>
+    <property name="blocking" value="1"/>
+   </properties>
+  </tile>
   <tile id="618" terrain=",2,,"/>
   <tile id="619" terrain="2,2,,"/>
   <tile id="620" terrain="2,,,"/>
@@ -1548,6 +1563,21 @@
    </properties>
   </tile>
   <tile id="656">
+   <properties>
+    <property name="blocking" value="1"/>
+   </properties>
+  </tile>
+  <tile id="657">
+   <properties>
+    <property name="blocking" value="1"/>
+   </properties>
+  </tile>
+  <tile id="658">
+   <properties>
+    <property name="blocking" value="1"/>
+   </properties>
+  </tile>
+  <tile id="659">
    <properties>
     <property name="blocking" value="1"/>
    </properties>
@@ -16642,7 +16672,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="604"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -16842,7 +16872,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="604"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
