@@ -21,8 +21,6 @@ void cSound::Init() {
 	effectsChannel1->setChannelGroup(effectsChannelGroup);
 	effectsChannel2->setChannelGroup(effectsChannelGroup);
 	effectsChannel3->setChannelGroup(effectsChannelGroup);
-	musicVolume = 0.5f;
-	effectsVolume = 0.5f;
 	ch3Paused = true;
 }
 

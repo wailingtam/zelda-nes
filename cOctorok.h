@@ -9,6 +9,7 @@ public:
 	cOctorok(void);
 	~cOctorok(void);
 
+	void GetRockInfo(int *x, int *y, int *s);
 	void Logic(worldMatrix *map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, int px, int py, bool underSpell);
 	void Draw(int tex_id);
 

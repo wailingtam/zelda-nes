@@ -9,7 +9,7 @@
 #define BACKGROUND	0
 #define EFFECT		1
 
-#define	DEFAULT_VOLUME	0.1f
+#define	DEFAULT_VOLUME	0.5f
 
 #define MUSIC_CG			0
 #define EFFECTS_CG			1
@@ -28,7 +28,10 @@
 #define	DIE				6
 #define BOOMERANG		7
 #define SPELL			8
+#define AQUAMENTUS_KILLED 9
 #define OVERWORLD_BGM	10
+#define UNDERWORLD_BGM	11
+#define SHIELD			12
 
 class cSound {
 
@@ -58,8 +61,8 @@ private:
 	FMOD::Channel *effectsChannel1;
 	FMOD::Channel *effectsChannel2;
 	FMOD::Channel *effectsChannel3;
-	float musicVolume;
-	float effectsVolume;
+	float musicVolume = DEFAULT_VOLUME;
+	float effectsVolume = DEFAULT_VOLUME;
 	bool ch1Paused;
 	bool ch3Paused;
 };

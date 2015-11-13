@@ -19,6 +19,12 @@ cOctorok::~cOctorok(void)
 {
 }
 
+void cOctorok::GetRockInfo(int * x, int * y, int *s)
+{
+	Rock.GetPosition(x, y);
+	*s = Rock.GetState();
+}
+
 void cOctorok::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox, cRect *directSwordHitbox, bool swordThrown, bool directAttack, int px, int py, bool underSpell)
 {
 	if (!GetWeaponHit()) Rock.SetHit(false);

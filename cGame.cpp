@@ -137,8 +137,11 @@ bool cGame::Process()
 		int aux = level;
 		level = otherLevel;
 		otherLevel = level;
+		Sound.PauseChannel(MUSIC_CHANNEL1);
+		if (level == INNERWORLD_LEVEL) Sound.Play(UNDERWORLD_BGM, MUSIC_CHANNEL1);
+		else Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
 	}
-
+	
 	int zone = getNewSpanZone(); //Zone 4 es la única que no está en el overworld
 	if (zone != currentZone && zone != -1) {
 		spawn(zone);
@@ -172,6 +175,15 @@ void cGame::Render()
 			if (vWizzrobe[i]->GetAlive()) vWizzrobe[i]->Draw(Data.GetID(IMG_ENEMIES));
 		}
 		if (Aquamentus.GetAlive()) Aquamentus.Draw(Data.GetID(IMG_ENEMIES));
+
+		for (int i = 0; i < explosions.size(); i++) {
+			if (!explosions[i].stop) {
+				explosions[i].e1.draw(0, IMG_ENEMIES);
+				explosions[i].e2.draw(1, IMG_ENEMIES);
+				explosions[i].e3.draw(2, IMG_ENEMIES);
+				explosions[i].e4.draw(3, IMG_ENEMIES);
+			}
+		}
 
 		Scene.DrawAboveBichos(Data.getOverworldIds());
 
@@ -207,6 +219,7 @@ void cGame::spawn(int zone) {
 	vOctorok.clear();
 	vTektike.clear();
 	vWizzrobe.clear();
+	explosions.clear();
 	for (position pos : res->octorocks) {
 		vOctorok.push_back(new cOctorok());
 		vOctorok[i++]->SetTile(pos.x, Scene.GetMap(level)->size() - pos.y);
@@ -253,6 +266,7 @@ int cGame::getNewSpanZone()
 
 void cGame::soundsLoading() {
 	Sound.LoadSound(OVERWORLD_BGM, "resources/audio/Overworld_BGM.ogg", BACKGROUND);
+	Sound.LoadSound(UNDERWORLD_BGM, "resources/audio/Underworld_BGM.ogg", BACKGROUND);
 	Sound.LoadSound(SWORD, "resources/audio/LOZ_Sword.wav", EFFECT);
 	Sound.LoadSound(SWORD_SHOOT, "resources/audio/LOZ_Sword_Shoot.wav", EFFECT);
 	Sound.LoadSound(HURT, "resources/audio/LOZ_Hurt.wav", EFFECT);
@@ -262,6 +276,8 @@ void cGame::soundsLoading() {
 	Sound.LoadSound(DIE, "resources/audio/LOZ_Dead.ogg", EFFECT);
 	Sound.LoadSound(BOOMERANG, "resources/audio/LOZ_Boomerang.wav", BACKGROUND);
 	Sound.LoadSound(SPELL, "resources/audio/Spell.mp3", EFFECT);
+	Sound.LoadSound(AQUAMENTUS_KILLED, "resources/audio/Aquamentus_killed.wav", EFFECT);
+	Sound.LoadSound(SHIELD, "resources/audio/LOZ_Shield.wav", EFFECT);
 }
 
 void cGame::gameLogic(int level) {
@@ -275,9 +291,23 @@ void cGame::gameLogic(int level) {
 		Sound.PauseChannel(EFFECTS_CHANNEL2);
 		Player.SetLow(false);
 	}
-	if (Player.GetLives() == 0) {
-		Sound.Play(DIE, EFFECTS_CHANNEL1);
-		Player.SetLives(-1.0);
+	if (!Player.GetAlive()) {
+		if (!gameOver) {
+			Sound.PauseChannel(MUSIC_CHANNEL1);
+			Sound.Play(DIE, EFFECTS_CHANNEL1);
+			this->switchTime = glutGet(GLUT_ELAPSED_TIME);
+			gameOver = true;
+		}
+		if (gameOver && glutGet(GLUT_ELAPSED_TIME) - switchTime > 10000) {
+			Sound.Init();
+			soundsLoading();
+			Sound.Play(OVERWORLD_BGM, MUSIC_CHANNEL1);
+			Player.Init();
+			currentZone = 0;
+			spawn(currentZone);
+			gameOver = false;
+		}
+		
 	}
 	pchb = Player.GetCurrentHitbox();
 	cRect whb;
@@ -298,7 +328,9 @@ void cGame::gameLogic(int level) {
 	for (int i = 0; i < vOctorok.size(); i++) {
 		if (vOctorok[i]->GetAlive()) {
 			vOctorok[i]->Logic(Scene.GetMap(level), &pchb, &whb, &dshb, playersWeaponThrown, directAttack, px, py, underSpell);
-			if (vOctorok[i]->GetWeaponHit() || vOctorok[i]->GetHit()) {
+			int x, y, s;
+			vOctorok[i]->GetRockInfo(&x, &y, &s);
+			if (vOctorok[i]->GetWeaponHit() && !shieldProtected(x, y, s) || vOctorok[i]->GetHit()) {
 				if (!Player.GetImmune()) {
 					Player.Hurt();
 					if (vOctorok[i]->GetWeaponHit()) vOctorok[i]->SetWeaponThrown(false);
@@ -307,8 +339,17 @@ void cGame::gameLogic(int level) {
 				vOctorok[i]->SetWeaponHit(false);
 				vOctorok[i]->SetHit(false);
 			}
+			else if (vOctorok[i]->GetWeaponHit() && shieldProtected(x, y, s)) {
+				vOctorok[i]->SetWeaponThrown(false);
+				vOctorok[i]->SetWeaponHit(false);
+				vOctorok[i]->SetHit(false);
+				Sound.Play(SHIELD, EFFECTS_CHANNEL1);
+			}
 			if (vOctorok[i]->GetHurt()) {
 				Sound.Play(KILL, EFFECTS_CHANNEL1);
+				int x, y;
+				vOctorok[i]->GetPosition(&x, &y);
+				newExplosion(x,y);
 				if (Player.usingSword()) Player.SetWeaponThrown(false);
 				else Player.SetBoomerangComingBack();
 				vOctorok[i]->SetHurt(false);
@@ -328,6 +369,9 @@ void cGame::gameLogic(int level) {
 			}
 			if (vTektike[i]->GetHurt()) {
 				Sound.Play(KILL, EFFECTS_CHANNEL1);
+				int x, y;
+				vTektike[i]->GetPosition(&x, &y);
+				newExplosion(x, y); 
 				if (Player.usingSword()) Player.SetWeaponThrown(false);
 				else Player.SetBoomerangComingBack();
 				vTektike[i]->SetHurt(false);
@@ -349,6 +393,9 @@ void cGame::gameLogic(int level) {
 			}
 			if (vWizzrobe[i]->GetHurt()) {
 				Sound.Play(KILL, EFFECTS_CHANNEL1);
+				int x, y;
+				vWizzrobe[i]->GetPosition(&x, &y);
+				newExplosion(x, y);
 				if (Player.usingSword()) Player.SetWeaponThrown(false);
 				else Player.SetBoomerangComingBack();
 				vWizzrobe[i]->SetHurt(false);
@@ -367,7 +414,12 @@ void cGame::gameLogic(int level) {
 			Aquamentus.SetHit(false);
 		}
 		if (Aquamentus.GetHurt()) {
-			if (!Aquamentus.GetAlive()) Sound.Play(KILL, EFFECTS_CHANNEL1);
+			if (!Aquamentus.GetAlive()) {
+				Sound.Play(AQUAMENTUS_KILLED, EFFECTS_CHANNEL1);
+				int x, y;
+				Aquamentus.GetPosition(&x, &y);
+				newExplosion(x, y);
+			}
 			else Sound.Play(HIT, EFFECTS_CHANNEL1);
 			if (Player.usingSword()) Player.SetWeaponThrown(false);
 			else Player.SetBoomerangComingBack();
@@ -376,4 +428,46 @@ void cGame::gameLogic(int level) {
 	}
 
 	Player.countTime();
+
+	for (int i = 0; i < explosions.size(); i++) {
+		if (!explosions[i].stop) {
+			explosions[i].e1.expand(0);
+			explosions[i].e2.expand(1);
+			explosions[i].e3.expand(2);
+			explosions[i].e4.expand(3);
+			++explosions[i].distance;
+			if (explosions[i].distance > 25) explosions[i].stop = true;
+		}
+	}
+}
+
+void cGame::newExplosion(int x, int y) {
+	cExplosion *part = new cExplosion();
+	part->SetPosition(x, y);
+	explosion e = {*part, *part, *part, *part, 0, false};
+	explosions.push_back(e);
+}
+
+bool cGame::shieldProtected(int x, int y, int state)
+{
+	int px, py;
+	Player.GetPosition(&px, &py);
+	bool shield = false;
+	switch (Player.GetState())
+	{
+	case STATE_LOOKLEFT:
+	case STATE_WALKLEFT:	if (state % 4 == 1 && px < x+12) shield = true;
+		break;
+	case STATE_LOOKRIGHT:
+	case STATE_WALKRIGHT:	if (state % 4 == 0 && px > x-12) shield = true;
+		break;
+	case STATE_LOOKUP:
+	case STATE_WALKUP:		if (state % 4 == 3 && py < y+12) shield = true;
+		break;
+	case STATE_LOOKDOWN:
+	case STATE_WALKDOWN:	if (state % 4 == 2 && py > y-12) shield = true;
+		break;
+	}
+
+	return shield;
 }

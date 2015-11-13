@@ -36,19 +36,19 @@ void cBoomerang::Logic(worldMatrix *map, cRect *playerHitbox)
 			switch (GetState()) {
 			case STATE_LOOKLEFT:
 			case STATE_WALKLEFT:	x -= speed;
-				if (CollidesMapLimits(map)) thrown = false;
+				if (CollidesMapLimits(map)) comingBack = true;
 				break;
 			case STATE_LOOKRIGHT:
 			case STATE_WALKRIGHT:	x += speed;
-				if (CollidesMapLimits(map)) thrown = false;
+				if (CollidesMapLimits(map)) comingBack = true;
 				break;
 			case STATE_LOOKUP:
 			case STATE_WALKUP:		y += speed;
-				if (CollidesMapLimits(map)) thrown = false;
+				if (CollidesMapLimits(map)) comingBack = true;
 				break;
 			case STATE_LOOKDOWN:
 			case STATE_WALKDOWN:	y -= speed;
-				if (CollidesMapLimits(map)) thrown = false;
+				if (CollidesMapLimits(map)) comingBack = true;
 				break;
 			}
 			distance += speed;

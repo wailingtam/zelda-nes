@@ -53,11 +53,11 @@ void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 			if (jump_alfa == jump_alfa_limit)
 			{
 				jumping = false;
-				//ty = jump_y;
-				//SetPosition(tx, ty);
 			}
 			else
 			{
+				int posx, posy;
+				GetPosition(&posx, &posy);
 				alfa = ((float)jump_alfa) * 0.017453f;
 				if (jump_up) ty = jump_y + (int)(((float)JUMP_HEIGHT) * sin(alfa));
 				else  ty = jump_y + (int)(((float)JUMP_HEIGHT) * cos(alfa)) - JUMP_HEIGHT;
@@ -67,7 +67,10 @@ void cTektike::Logic(worldMatrix * map, cRect *playerHitbox, cRect *swordHitbox,
 					jump_x_distance -= GetStepLength();
 				}
 				tx = jump_x;
-				SetPosition(tx, ty);
+				if (!(tx >= 0 && tx+Hitbox.right < 1600) || !(ty >= 0 && ty+Hitbox.top < 1120)) {
+					jumping = false;
+				}
+				else SetPosition(tx, ty);
 			}
 		}
 	}

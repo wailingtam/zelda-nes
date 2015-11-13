@@ -3,7 +3,7 @@
 #include <iostream>
 
 #define HEART_WIDTH 32/4 //In game, not texture
-#define HEART_HEIGHT 28/4
+#define HEART_HEIGHT 32/4
 
 #define MINIMAP_WIDTH 25
 #define MINIMAP_HEIGHT 18

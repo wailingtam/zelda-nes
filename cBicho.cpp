@@ -82,9 +82,11 @@ bool cBicho::Collides(cRect *rc)
 
 bool cBicho::CollidesMapLimits(worldMatrix *map) {
 	
-	if (isBlocking(map)) return true;
+	//if (isBlocking(map)) return true;
 
 	cRect hb = GetCurrentHitbox();
+	if (this->useVHbox) hb = GetHitboxByPosition(state);
+
 	bool out = false;
 
 	switch (state) {
@@ -150,118 +152,65 @@ void cBicho::DrawRect(int tex_id, float xo, float yo, float xf, float yf)
 }
 
 void cBicho::MoveUp(worldMatrix *map) {
-	int yaux;
+	int yaux = y;
+	y += step_length;
 
-	//Whats next tile?
-	/*if ((y % TILE_SIZE) == 0)
-	{*/
-		yaux = y;
-		y += step_length;
-
-		if (CollidesMapLimits(map))
-		{
-			y = yaux;
-			state = STATE_LOOKUP;
-		}
-	//}
-	////Advance, no problem
-	//else
-	//{
-	//	y += step_length;
-		else if (state != STATE_WALKUP)
-		{
-			state = STATE_WALKUP;
-			seq = 0;
-			delay = 0;
-		}
-	//}
+	if (CollidesMapLimits(map) || isBlocking(map)) {
+		y = yaux;
+		state = STATE_LOOKUP;
+	}
+	else if (state != STATE_WALKUP) {
+		state = STATE_WALKUP;
+		seq = 0;
+		delay = 0;
+	}
 }
 
 void cBicho::MoveDown(worldMatrix *map) {
-	int yaux;
+	int yaux = y;
+	y -= step_length;
 
-	//Whats next tile?
-	/*if ((y % TILE_SIZE) == 0)
-	{*/
-		yaux = y;
-		y -= step_length;
-
-		if (CollidesMapLimits(map))
-		{
-			y = yaux;
-			state = STATE_LOOKDOWN;
-		}
-	//}
-	////Advance, no problem
-	//else
-	//{
-		//y -= step_length;
-		else if (state != STATE_WALKDOWN)
-		{
-			state = STATE_WALKDOWN;
-			seq = 0;
-			delay = 0;
-		}
-	//}
+	if (CollidesMapLimits(map) || isBlocking(map)) {
+		y = yaux;
+		state = STATE_LOOKDOWN;
+	}
+	else if (state != STATE_WALKDOWN) {
+		state = STATE_WALKDOWN;
+		seq = 0;
+		delay = 0;
+	}
 }
 
 void cBicho::MoveLeft(worldMatrix *map)
 {
-	int xaux;
+	int xaux = x;
+	x -= step_length;
 
-	//Whats next tile?
-	///*if ((x % TILE_SIZE) == 0)
-	//{*/
-		xaux = x;
-		x -= step_length;
-
-		if (CollidesMapLimits(map))
-		{
-			x = xaux;
-			state = STATE_LOOKLEFT;
-		}
-
-	/*}
-	//Advance, no problem
-	else
-	{
-		x -= step_length;*/
-		else if (state != STATE_WALKLEFT)
-		{
-			state = STATE_WALKLEFT;
-			seq = 0;
-			delay = 0;
-		}
-	//}
+	if (CollidesMapLimits(map) || isBlocking(map)) {
+		x = xaux;
+		state = STATE_LOOKLEFT;
+	}
+	else if (state != STATE_WALKLEFT) {
+		state = STATE_WALKLEFT;
+		seq = 0;
+		delay = 0;
+	}
 }
+
 void cBicho::MoveRight(worldMatrix *map)
 {
-	int xaux;
+	int xaux = x;
+	x += step_length;
 
-	//Whats next tile?
-	/*if ((x % TILE_SIZE) == 0)
-	{*/
-		xaux = x;
-		x += step_length;
-
-		if (CollidesMapLimits(map))
-		{
-			x = xaux;
-			state = STATE_LOOKRIGHT;
-		}
-	//}
-	////Advance, no problem
-	//else
-	//{
-		//x += step_length;
-
-		else if (state != STATE_WALKRIGHT)
-		{
-			state = STATE_WALKRIGHT;
-			seq = 0;
-			delay = 0;
-		}
-	//}
+	if (CollidesMapLimits(map) || isBlocking(map)) {
+		x = xaux;
+		state = STATE_LOOKRIGHT;
+	}
+	else if (state != STATE_WALKRIGHT) {
+		state = STATE_WALKRIGHT;
+		seq = 0;
+		delay = 0;
+	}
 }
 
 void cBicho::Stop()

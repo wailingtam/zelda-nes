@@ -9,12 +9,13 @@
 #include "cData.h"
 #include "cInterface.h"
 #include "cSound.h"
+#include "cExplosion.h"
 #include <vector>
 #include <map>
 
 #define GAME_WIDTH	800
 #define GAME_HEIGHT 600
-#define ZOOM_FACTOR 8
+#define ZOOM_FACTOR 1
 
 struct respawnOfBichos{
 	std::vector<position> octorocks, tektikes, wizzrobes;
@@ -25,6 +26,12 @@ struct zone {
 	std::vector<position> vertexs;
 	respawnOfBichos respawn;
 	//bool overworld;
+};
+
+struct explosion {
+	cExplosion e1, e2, e3, e4;
+	int distance;
+	bool stop;
 };
 
 typedef std::vector<zone> zones;
@@ -54,11 +61,14 @@ public:
 	void spawn(int zone);
 	int getNewSpanZone();
 	void soundsLoading();
+	void newExplosion(int x, int y);
+	bool shieldProtected(int x, int y, int state);
 	void gameLogic(int level);
 
 	std::vector<cOctorok*> vOctorok;
 	std::vector<cTektike*> vTektike;
 	std::vector<cWizzrobe*> vWizzrobe;
+	std::vector<explosion> explosions;
 
 protected:
 	cSound Sound;
@@ -74,6 +84,7 @@ private:
 	int w, h;
 	int currentZone;
 	int switchTime = glutGet(GLUT_ELAPSED_TIME);
+	bool gameOver = false;
 	zones respawnZones = {
 		{ //Zone forest
 			{  //Vertexs

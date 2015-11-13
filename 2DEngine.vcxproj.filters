@@ -83,6 +83,9 @@
     <ClCompile Include="cBoomerang.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cExplosion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cBicho.h">
@@ -155,6 +158,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cBoomerang.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cExplosion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
